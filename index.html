@@ -1,0 +1,246 @@
+const jornada = 8;
+
+let dados = JSON.parse(localStorage.getItem("dados")) || {
+
+dias:{},
+saldoTotal:0
+
+};
+
+
+
+let hoje = new Date().toLocaleDateString();
+
+
+if(!dados.dias[hoje]){
+
+dados.dias[hoje]={
+
+entrada:null,
+saidaAlmoco:null,
+voltaAlmoco:null,
+saida:null,
+gps:null,
+horas:0,
+extra:0
+
+};
+
+}
+
+
+
+function salvar(){
+
+localStorage.setItem("dados",JSON.stringify(dados));
+
+backupAuto();
+
+}
+
+
+
+function agora(){
+
+return new Date().getTime();
+
+}
+
+
+
+function gps(){
+
+navigator.geolocation.getCurrentPosition(pos=>{
+
+let g=pos.coords.latitude+","+pos.coords.longitude;
+
+dados.dias[hoje].gps=g;
+
+document.getElementById("gps").innerText=g;
+
+salvar();
+
+});
+
+}
+
+
+
+function registrarEntrada(){
+
+dados.dias[hoje].entrada=agora();
+
+gps();
+
+salvar();
+
+atualizar();
+
+}
+
+
+
+function registrarSaidaAlmoco(){
+
+dados.dias[hoje].saidaAlmoco=agora();
+
+salvar();
+
+atualizar();
+
+}
+
+
+
+function registrarVoltaAlmoco(){
+
+dados.dias[hoje].voltaAlmoco=agora();
+
+salvar();
+
+atualizar();
+
+}
+
+
+
+function registrarSaida(){
+
+dados.dias[hoje].saida=agora();
+
+calcular();
+
+gps();
+
+salvar();
+
+atualizar();
+
+}
+
+
+
+function calcular(){
+
+let d=dados.dias[hoje];
+
+if(d.entrada && d.saida){
+
+let manha=d.saidaAlmoco-d.entrada;
+
+let tarde=d.saida-d.voltaAlmoco;
+
+let total=(manha+tarde)/3600000;
+
+d.horas=total.toFixed(2);
+
+let extra=total-jornada;
+
+if(extra<0)extra=0;
+
+d.extra=extra.toFixed(2);
+
+calcularSaldo();
+
+}
+
+}
+
+
+
+function calcularSaldo(){
+
+let soma=0;
+
+for(let dia in dados.dias){
+
+soma+=Number(dados.dias[dia].extra||0);
+
+}
+
+dados.saldoTotal=soma.toFixed(2);
+
+}
+
+
+
+function atualizar(){
+
+let d=dados.dias[hoje];
+
+document.getElementById("horas").innerText=d.horas||0;
+
+document.getElementById("extra").innerText=d.extra||0;
+
+document.getElementById("saldo").innerText=dados.saldoTotal||0;
+
+
+if(d.saidaAlmoco && d.voltaAlmoco){
+
+let alm=(d.voltaAlmoco-d.saidaAlmoco)/3600000;
+
+document.getElementById("almoco").innerText=alm.toFixed(2)+" h";
+
+}
+
+if(d.gps){
+
+document.getElementById("gps").innerText=d.gps;
+
+}
+
+}
+
+
+
+function backupAuto(){
+
+let texto=JSON.stringify(dados);
+
+localStorage.setItem("backup",texto);
+
+}
+
+
+
+function exportar(){
+
+let texto=JSON.stringify(dados);
+
+let blob=new Blob([texto]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="backup_ponto.json";
+
+a.click();
+
+}
+
+
+
+function importar(e){
+
+let arquivo=e.target.files[0];
+
+let leitor=new FileReader();
+
+leitor.onload=function(){
+
+dados=JSON.parse(leitor.result);
+
+salvar();
+
+atualizar();
+
+}
+
+leitor.readAsText(arquivo);
+
+}
+
+
+
+atualizar();
