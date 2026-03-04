@@ -1,246 +1,105 @@
-const jornada = 8;
+<!DOCTYPE html>
 
-let dados = JSON.parse(localStorage.getItem("dados")) || {
+<html>
 
-dias:{},
-saldoTotal:0
+<head>
 
-};
+<meta charset="UTF-8">
 
+<meta name="viewport" content="width=device-width">
 
+<title>Ponto Digital</title>
 
-let hoje = new Date().toLocaleDateString();
+<style>
 
+body{
 
-if(!dados.dias[hoje]){
-
-dados.dias[hoje]={
-
-entrada:null,
-saidaAlmoco:null,
-voltaAlmoco:null,
-saida:null,
-gps:null,
-horas:0,
-extra:0
-
-};
+font-family:Arial;
+text-align:center;
+background:#f2f2f2;
 
 }
 
+button{
 
-
-function salvar(){
-
-localStorage.setItem("dados",JSON.stringify(dados));
-
-backupAuto();
-
-}
-
-
-
-function agora(){
-
-return new Date().getTime();
+width:90%;
+padding:15px;
+margin:5px;
+font-size:18px;
 
 }
 
+.caixa{
 
-
-function gps(){
-
-navigator.geolocation.getCurrentPosition(pos=>{
-
-let g=pos.coords.latitude+","+pos.coords.longitude;
-
-dados.dias[hoje].gps=g;
-
-document.getElementById("gps").innerText=g;
-
-salvar();
-
-});
+background:white;
+margin:10px;
+padding:10px;
+border-radius:10px;
 
 }
 
+</style>
 
+</head>
 
-function registrarEntrada(){
+<body>
 
-dados.dias[hoje].entrada=agora();
+<h2>Ponto Digital</h2>
 
-gps();
+<div class="caixa">
 
-salvar();
+<button onclick="registrarEntrada()">
+Entrada
+</button>
 
-atualizar();
+<button onclick="registrarSaidaAlmoco()">
+Saída Almoço
+</button>
 
-}
+<button onclick="registrarVoltaAlmoco()">
+Volta Almoço
+</button>
 
+<button onclick="registrarSaida()">
+Saída
+</button>
 
+</div>
 
-function registrarSaidaAlmoco(){
+<div class="caixa">
 
-dados.dias[hoje].saidaAlmoco=agora();
+Horas: <b id="horas">0</b> h
+<br><br>
 
-salvar();
+Extra: <b id="extra">0</b> h
+<br><br>
 
-atualizar();
+Saldo Total: <b id="saldo">0</b> h
+<br><br>
 
-}
+Almoço: <b id="almoco">0</b>
+<br><br>
 
+GPS:
+<br>
+<b id="gps">-</b>
 
+</div>
 
-function registrarVoltaAlmoco(){
+<div class="caixa">
 
-dados.dias[hoje].voltaAlmoco=agora();
+<button onclick="exportar()">
+Exportar Backup
+</button>
 
-salvar();
+<br><br>
 
-atualizar();
+<input type="file" onchange="importar(event)">
 
-}
+</div>
 
+<script src="script.js"></script>
 
+</body>
 
-function registrarSaida(){
-
-dados.dias[hoje].saida=agora();
-
-calcular();
-
-gps();
-
-salvar();
-
-atualizar();
-
-}
-
-
-
-function calcular(){
-
-let d=dados.dias[hoje];
-
-if(d.entrada && d.saida){
-
-let manha=d.saidaAlmoco-d.entrada;
-
-let tarde=d.saida-d.voltaAlmoco;
-
-let total=(manha+tarde)/3600000;
-
-d.horas=total.toFixed(2);
-
-let extra=total-jornada;
-
-if(extra<0)extra=0;
-
-d.extra=extra.toFixed(2);
-
-calcularSaldo();
-
-}
-
-}
-
-
-
-function calcularSaldo(){
-
-let soma=0;
-
-for(let dia in dados.dias){
-
-soma+=Number(dados.dias[dia].extra||0);
-
-}
-
-dados.saldoTotal=soma.toFixed(2);
-
-}
-
-
-
-function atualizar(){
-
-let d=dados.dias[hoje];
-
-document.getElementById("horas").innerText=d.horas||0;
-
-document.getElementById("extra").innerText=d.extra||0;
-
-document.getElementById("saldo").innerText=dados.saldoTotal||0;
-
-
-if(d.saidaAlmoco && d.voltaAlmoco){
-
-let alm=(d.voltaAlmoco-d.saidaAlmoco)/3600000;
-
-document.getElementById("almoco").innerText=alm.toFixed(2)+" h";
-
-}
-
-if(d.gps){
-
-document.getElementById("gps").innerText=d.gps;
-
-}
-
-}
-
-
-
-function backupAuto(){
-
-let texto=JSON.stringify(dados);
-
-localStorage.setItem("backup",texto);
-
-}
-
-
-
-function exportar(){
-
-let texto=JSON.stringify(dados);
-
-let blob=new Blob([texto]);
-
-let a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-
-a.download="backup_ponto.json";
-
-a.click();
-
-}
-
-
-
-function importar(e){
-
-let arquivo=e.target.files[0];
-
-let leitor=new FileReader();
-
-leitor.onload=function(){
-
-dados=JSON.parse(leitor.result);
-
-salvar();
-
-atualizar();
-
-}
-
-leitor.readAsText(arquivo);
-
-}
-
-
-
-atualizar();
+</html>
