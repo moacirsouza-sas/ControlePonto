@@ -1,41 +1,56 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="pt-br">
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width">
-
-<title>Ponto Digital</title>
+<title>Ponto Pro</title>
 
 <style>
 
 body{
+font-family: Arial;
+background:#f5f5f5;
+display:flex;
+justify-content:center;
+padding:30px;
+}
 
-font-family:Arial;
+.container{
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+width:350px;
+}
+
+h2{
 text-align:center;
-background:#f2f2f2;
+margin-bottom:20px;
+}
 
+input{
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:1px solid #ccc;
 }
 
 button{
-
-width:90%;
-padding:15px;
-margin:5px;
-font-size:18px;
-
+width:100%;
+padding:12px;
+background:#6366f1;
+border:none;
+color:white;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
 }
 
-.caixa{
-
-background:white;
-margin:10px;
-padding:10px;
-border-radius:10px;
-
+button:hover{
+background:#4f46e5;
 }
 
 </style>
@@ -44,62 +59,28 @@ border-radius:10px;
 
 <body>
 
-<h2>Ponto Digital</h2>
+<div class="container">
 
-<div class="caixa">
+<h2>Ponto Pro</h2>
 
-<button onclick="registrarEntrada()">
-Entrada
-</button>
+<label>Entrada</label>
+<input type="time" id="entrada">
 
-<button onclick="registrarSaidaAlmoco()">
-Saída Almoço
-</button>
+<label>Saída Almoço</label>
+<input type="time" id="almocoSai">
 
-<button onclick="registrarVoltaAlmoco()">
-Volta Almoço
-</button>
+<label>Volta Almoço</label>
+<input type="time" id="almocoVolta">
 
-<button onclick="registrarSaida()">
-Saída
-</button>
+<label>Saída</label>
+<input type="time" id="saida">
 
-</div>
-
-<div class="caixa">
-
-Horas: <b id="horas">0</b> h
-<br><br>
-
-Extra: <b id="extra">0</b> h
-<br><br>
-
-Saldo Total: <b id="saldo">0</b> h
-<br><br>
-
-Almoço: <b id="almoco">0</b>
-<br><br>
-
-GPS:
-<br>
-<b id="gps">-</b>
-
-</div>
-
-<div class="caixa">
-
-<button onclick="exportar()">
-Exportar Backup
-</button>
-
-<br><br>
-
-<input type="file" onchange="importar(event)">
+<button onclick="registrar()">Registrar</button>
 
 </div>
 
 <script src="script.js"></script>
 
 </body>
-
 </html>
+
