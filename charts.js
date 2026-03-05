@@ -1,16 +1,20 @@
+let grafico;
+
 function gerarGrafico(){
-
-const db=JSON.parse(localStorage.getItem("ponto_db")||"[]");
-
-const labels=db.map(i=>i.data);
-
-const saldo=db.map(i=>i.saldo);
 
 const ctx=document.getElementById("graficoHoras");
 
 if(!ctx) return;
 
-new Chart(ctx,{
+const dados=JSON.parse(localStorage.getItem("ponto_db")||"[]");
+
+const labels=dados.map(d=>d.data);
+
+const horas=dados.map(d=>(540+d.saldo)/60);
+
+if(grafico) grafico.destroy();
+
+grafico=new Chart(ctx,{
 
 type:"bar",
 
@@ -20,8 +24,9 @@ labels:labels,
 
 datasets:[{
 
-label:"Saldo diário (min)",
-data:saldo
+label:"Horas Trabalhadas",
+
+data:horas
 
 }]
 
@@ -30,6 +35,12 @@ data:saldo
 options:{
 
 responsive:true,
+
+plugins:{
+
+legend:{display:false}
+
+},
 
 scales:{
 
