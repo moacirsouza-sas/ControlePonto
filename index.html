@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,53 +8,9 @@
 
 <title>Ponto Pro</title>
 
-<style>
+<link rel="stylesheet" href="style.css">
 
-body{
-font-family: Arial;
-background:#f5f5f5;
-display:flex;
-justify-content:center;
-padding:30px;
-}
-
-.container{
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-width:350px;
-}
-
-h2{
-text-align:center;
-margin-bottom:20px;
-}
-
-input{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-button{
-width:100%;
-padding:12px;
-background:#6366f1;
-border:none;
-color:white;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
-}
-
-button:hover{
-background:#4f46e5;
-}
-
-</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -62,6 +19,8 @@ background:#4f46e5;
 <div class="container">
 
 <h2>Ponto Pro</h2>
+
+<div class="card">
 
 <label>Entrada</label>
 <input type="time" id="entrada">
@@ -77,9 +36,45 @@ background:#4f46e5;
 
 <button onclick="registrar()">Registrar</button>
 
+<button onclick="exportarCSV()">Exportar CSV</button>
+
+</div>
+
+<div class="card">
+
+<h3>Histórico</h3>
+
+<table id="tabela">
+
+<thead>
+
+<tr>
+<th>Data</th>
+<th>Entrada</th>
+<th>Saída</th>
+<th>Saldo</th>
+</tr>
+
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h3>Gráfico de Horas</h3>
+
+<canvas id="graficoHoras"></canvas>
+
+</div>
+
 </div>
 
 <script src="script.js"></script>
+<script src="charts.js"></script>
 
 </body>
 </html>
