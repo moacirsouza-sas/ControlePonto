@@ -1,4 +1,4 @@
-const API_URL="https://script.google.com/macros/s/AKfycbzoFramwcgdpsfCy1Uhqd2ZTL1gDGaRyOf2EH16g0I-oYUgTxQ8yh8JR2WGN-M2Oj8/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbzT0qfwvULU8e4KdO-lx45OyBqv3k1PqpBhSWkayw/dev";
 
 let db=JSON.parse(localStorage.getItem("ponto_db")||"[]");
 
@@ -118,4 +118,5 @@ renderizarHistorico();
 gerarGrafico();
 
 };
+
 
