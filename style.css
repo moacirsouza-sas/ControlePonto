@@ -1,69 +1,120 @@
-body{
+const API_URL="https://script.google.com/macros/s/AKfycbzgdyO8v9wlYYDNNg_YRU_SH7SmIW2g1G2j3COUJ7keP2mXF8ydknvtXZt5FAjduuk/exec";
 
-font-family:Arial;
-background:#f5f5f5;
-display:flex;
-justify-content:center;
-padding:30px;
+let db=JSON.parse(localStorage.getItem("ponto_db")||"[]");
 
-}
+function registrar(){
 
-.container{
+const entrada=document.getElementById("entrada").value;
+const almocoSai=document.getElementById("almocoSai").value;
+const almocoVolta=document.getElementById("almocoVolta").value;
+const saida=document.getElementById("saida").value;
 
-width:400px;
+if(!entrada||!saida){
 
-}
-
-.card{
-
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-margin-bottom:20px;
+alert("Entrada e saída obrigatórios");
+return;
 
 }
 
-input{
+const dataHoje=new Date().toLocaleDateString("pt-BR");
 
-width:100%;
-padding:10px;
-margin-bottom:10px;
-border-radius:8px;
-border:1px solid #ccc;
+const minutos=(new Date(`1970-01-01T${saida}`)-new Date(`1970-01-01T${entrada}`))/60000;
 
-}
+const saldo=minutos-540;
 
-button{
+const registro={
 
-width:100%;
-padding:12px;
-background:#6366f1;
-color:white;
-border:none;
-border-radius:10px;
-margin-bottom:10px;
-cursor:pointer;
+data:dataHoje,
+entrada,
+almocoSai,
+almocoVolta,
+saida,
+saldo
 
-}
+};
 
-button:hover{
+db.push(registro);
 
-background:#4f46e5;
+localStorage.setItem("ponto_db",JSON.stringify(db));
 
-}
+enviarGoogleSheets(registro);
 
-table{
+renderizarHistorico();
 
-width:100%;
-border-collapse:collapse;
+gerarGrafico();
 
 }
 
-th,td{
+function enviarGoogleSheets(d){
 
-border-bottom:1px solid #ddd;
-padding:8px;
-text-align:center;
+fetch(API_URL,{
+
+method:"POST",
+body:JSON.stringify({
+data:d.data,
+entrada:d.entrada,
+almocoSai:d.almocoSai,
+almocoVolta:d.almocoVolta,
+saida:d.saida,
+saldo:d.saldo,
+geo:"gps"
+})
+
+});
 
 }
+
+function renderizarHistorico(){
+
+const tbody=document.querySelector("#tabela tbody");
+
+tbody.innerHTML="";
+
+db.slice().reverse().forEach(r=>{
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+
+<td>${r.data}</td>
+<td>${r.entrada}</td>
+<td>${r.saida}</td>
+<td>${r.saldo}</td>
+
+`;
+
+tbody.appendChild(tr);
+
+});
+
+}
+
+function exportarCSV(){
+
+let csv="Data,Entrada,Saida,Saldo\n";
+
+db.forEach(r=>{
+
+csv+=`${r.data},${r.entrada},${r.saida},${r.saldo}\n`;
+
+});
+
+const blob=new Blob([csv]);
+
+const a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="ponto.csv";
+
+a.click();
+
+}
+
+window.onload=()=>{
+
+renderizarHistorico();
+
+gerarGrafico();
+
+};
