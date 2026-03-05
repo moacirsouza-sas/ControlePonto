@@ -1,25 +1,69 @@
 body{
 
 font-family:Arial;
-
-margin:20px;
+background:#f5f5f5;
+display:flex;
+justify-content:center;
+padding:30px;
 
 }
 
+.container{
+
+width:400px;
+
+}
+
+.card{
+
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+margin-bottom:20px;
+
+}
+
+input{
+
+width:100%;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
+border:1px solid #ccc;
+
+}
 
 button{
 
-padding:10px;
-
-margin:5px;
+width:100%;
+padding:12px;
+background:#6366f1;
+color:white;
+border:none;
+border-radius:10px;
+margin-bottom:10px;
+cursor:pointer;
 
 }
 
+button:hover{
+
+background:#4f46e5;
+
+}
 
 table{
 
-margin-top:20px;
-
 width:100%;
+border-collapse:collapse;
+
+}
+
+th,td{
+
+border-bottom:1px solid #ddd;
+padding:8px;
+text-align:center;
 
 }
