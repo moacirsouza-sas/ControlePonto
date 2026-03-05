@@ -1,16 +1,27 @@
+
 body{
 
-font-family:Arial;
+font-family: Arial, Helvetica, sans-serif;
 background:#f5f5f5;
 display:flex;
 justify-content:center;
+align-items:flex-start;
 padding:30px;
+margin:0;
 
 }
 
 .container{
 
-width:400px;
+width:100%;
+max-width:420px;
+
+}
+
+h2{
+
+text-align:center;
+margin-bottom:20px;
 
 }
 
@@ -19,8 +30,17 @@ width:400px;
 background:white;
 padding:20px;
 border-radius:12px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
 margin-bottom:20px;
+
+}
+
+label{
+
+font-size:14px;
+font-weight:bold;
+margin-bottom:4px;
+display:block;
 
 }
 
@@ -28,9 +48,10 @@ input{
 
 width:100%;
 padding:10px;
-margin-bottom:10px;
+margin-bottom:12px;
 border-radius:8px;
 border:1px solid #ccc;
+font-size:14px;
 
 }
 
@@ -44,6 +65,9 @@ border:none;
 border-radius:10px;
 margin-bottom:10px;
 cursor:pointer;
+font-size:15px;
+font-weight:bold;
+transition:0.2s;
 
 }
 
@@ -57,13 +81,49 @@ table{
 
 width:100%;
 border-collapse:collapse;
+font-size:14px;
+
+}
+
+th{
+
+background:#f1f1f1;
+font-weight:bold;
 
 }
 
 th,td{
 
 border-bottom:1px solid #ddd;
-padding:8px;
+padding:10px;
 text-align:center;
+
+}
+
+tr:hover{
+
+background:#fafafa;
+
+}
+
+canvas{
+
+margin-top:10px;
+
+}
+
+@media(max-width:480px){
+
+body{
+
+padding:15px;
+
+}
+
+.card{
+
+padding:15px;
+
+}
 
 }
