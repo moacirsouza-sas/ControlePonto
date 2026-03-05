@@ -1,4 +1,4 @@
-const API_URL="https://script.google.com/macros/s/AKfycbzT0qfwvULU8e4KdO-lx45OyBqv3k1PqpBhSWkayw/dev";
+const API_URL="https://script.google.com/macros/s/AKfycbzT0qfwvULU8e4KdO-lx45OyBqv3k1PqpBhSWkayw/exec";
 
 let db=JSON.parse(localStorage.getItem("ponto_db")||"[]");
 
@@ -50,6 +50,11 @@ function enviarGoogleSheets(d){
 fetch(API_URL,{
 
 method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
 body:JSON.stringify({
 data:d.data,
 entrada:d.entrada,
@@ -60,7 +65,10 @@ saldo:d.saldo,
 geo:"gps"
 })
 
-});
+})
+.then(r=>r.text())
+.then(res=>console.log("Resposta:",res))
+.catch(err=>console.error("Erro envio:",err));
 
 }
 
@@ -99,7 +107,7 @@ csv+=`${r.data},${r.entrada},${r.saida},${r.saldo}\n`;
 
 });
 
-const blob=new Blob([csv]);
+const blob=new Blob([csv],{type:"text/csv"});
 
 const a=document.createElement("a");
 
@@ -115,8 +123,9 @@ window.onload=()=>{
 
 renderizarHistorico();
 
+if(typeof gerarGrafico==="function"){
 gerarGrafico();
+}
 
 };
-
 
