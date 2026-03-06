@@ -1,55 +1,49 @@
-let grafico;
+let grafico
 
 function gerarGrafico(){
 
-const ctx=document.getElementById("graficoHoras");
+const ctx=document.getElementById("graficoHoras")
 
-if(!ctx) return;
+if(!ctx) return
 
-let dados=JSON.parse(localStorage.getItem("dados")||'{"dias":{}}');
+const dados=JSON.parse(localStorage.getItem("ponto_db")||"[]")
 
-let labels=[];
-let horas=[];
+if(dados.length===0) return
 
-Object.keys(dados.dias).forEach(data=>{
+const labels=dados.map(d=>d.data)
 
-let d=dados.dias[data];
+const horas=dados.map(d=>(480+(d.saldo||0))/60)
 
-if(d.entrada && d.saida){
-
-let e=converter(d.entrada);
-let s=converter(d.saida);
-
-horas.push((s-e)/60);
-
-labels.push(data);
-
-}
-
-});
-
-if(grafico) grafico.destroy();
+if(grafico) grafico.destroy()
 
 grafico=new Chart(ctx,{
 
 type:"bar",
 
 data:{
+
 labels:labels,
+
 datasets:[{
-label:"Horas",
-data:horas
+
+label:"Horas Trabalhadas",
+
+data:horas,
+
+backgroundColor:"rgba(54,162,235,0.6)"
+
 }]
+
+},
+
+options:{
+
+responsive:true,
+
+plugins:{legend:{display:false}}
+
 }
 
-});
-
-}
-
-function converter(h){
-
-let p=h.split(":");
-
-return parseInt(p[0])*60+parseInt(p[1]);
+})
 
 }
