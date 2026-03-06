@@ -10,29 +10,43 @@
 
 <link rel="stylesheet" href="css/style.css">
 
+<!-- Biblioteca do gráfico -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Scripts do projeto -->
+<script src="js/script.js" defer></script>
+<script src="js/charts.js" defer></script>
 
 </head>
 
 <body>
 
-<div class="container">
+<header>
 
-<h2>Ponto Pro</h2>
+<h1>Ponto Pro</h1>
 
-<div class="card">
+</header>
 
-<label>Entrada</label>
+<main class="container">
+
+<!-- REGISTRO DE PONTO -->
+<section class="card">
+
+<h3>Registro de Ponto</h3>
+
+<label for="entrada">Entrada</label>
 <input type="time" id="entrada">
 
-<label>Saída Almoço</label>
+<label for="almocoSai">Saída Almoço</label>
 <input type="time" id="almocoSai">
 
-<label>Volta Almoço</label>
+<label for="almocoVolta">Volta Almoço</label>
 <input type="time" id="almocoVolta">
 
-<label>Saída</label>
+<label for="saida">Saída</label>
 <input type="time" id="saida">
+
+<div class="botoes">
 
 <button onclick="registrar()">Registrar</button>
 
@@ -40,7 +54,11 @@
 
 </div>
 
-<div class="card">
+</section>
+
+
+<!-- HISTÓRICO -->
+<section class="card">
 
 <h3>Histórico</h3>
 
@@ -61,22 +79,22 @@
 
 </table>
 
-</div>
+</section>
 
-<div class="card">
+
+<!-- GRÁFICO -->
+<section class="card">
 
 <h3>Gráfico de Horas</h3>
 
 <canvas id="graficoHoras"></canvas>
 
-</div>
+</section>
 
-</div>
-
-<script src="js/script.js" defer></script>
-<script src="js/charts.js" defer></script>
+</main>
 
 </body>
 </html>
+
 
 
