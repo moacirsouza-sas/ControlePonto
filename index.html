@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 
 <meta charset="UTF-8">
@@ -17,84 +17,86 @@
 
 <div class="container">
 
-<h2>Ponto Pro</h2>
+<h1>Ponto Pro</h1>
 
-<div class="card status">
-
-<p id="status">Aguardando registro...</p>
-
-<div class="info">
-<div class="box azul">
-<span>Horário</span>
-<strong id="horaRegistro">--:--</strong>
+<div class="status" id="status">
+Aguardando registro...
 </div>
 
-<div class="box verde">
-<span>Trabalhadas</span>
-<strong id="horasFeitas">0h 0m</strong>
+<div class="relogio">
+Horário do registro:
+<span id="horaRegistro">--:--:--</span>
 </div>
 
-<div class="box amarelo">
-<span>Faltantes</span>
-<strong id="horasFaltantes">0h 0m</strong>
-</div>
+<div class="cards">
 
-<div class="box roxo">
-<span>Extras</span>
-<strong id="horasExtras">0h 0m</strong>
-</div>
-</div>
-
+<div class="card">
+<h3>Horas Trabalhadas</h3>
+<p id="horasTrabalhadas">0h 0m</p>
 </div>
 
 <div class="card">
+<h3>Horas Faltantes</h3>
+<p id="horasFaltantes">0h 0m</p>
+</div>
+
+<div class="card">
+<h3>Horas Extras</h3>
+<p id="horasExtras">0h 0m</p>
+</div>
+
+</div>
 
 <div class="botoes">
 
-<button onclick="registrarEntrada()">Entrada</button>
-<button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
-<button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
-<button onclick="registrarSaida()">Saída</button>
+<button onclick="registrar('entrada')">
+Entrada
+</button>
+
+<button onclick="registrar('almocoSai')">
+Saída Almoço
+</button>
+
+<button onclick="registrar('almocoVolta')">
+Volta Almoço
+</button>
+
+<button onclick="registrar('saida')">
+Saída
+</button>
 
 </div>
 
-</div>
+<h2>Histórico</h2>
 
-<div class="card">
-
-<h3>Histórico</h3>
-
-<table id="tabela">
+<table>
 
 <thead>
+
 <tr>
 <th>Data</th>
 <th>Entrada</th>
 <th>Saída</th>
 <th>Saldo</th>
 </tr>
+
 </thead>
 
-<tbody></tbody>
+<tbody id="historico"></tbody>
 
 </table>
 
-<button onclick="exportarCSV()">Exportar CSV</button>
+<button class="exportar" onclick="exportarCSV()">
+Exportar CSV
+</button>
 
-</div>
+<h2>Gráfico de Horas</h2>
 
-<div class="card">
-
-<h3>Gráfico de Horas</h3>
-
-<canvas id="graficoHoras"></canvas>
-
-</div>
+<canvas id="grafico"></canvas>
 
 </div>
 
 <script src="script.js"></script>
-<script src="charts.js"></script>
 
 </body>
 </html>
