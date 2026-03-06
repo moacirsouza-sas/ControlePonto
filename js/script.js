@@ -1,5 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyERIOLmvKu5jwniMUfjnPDNjpW6Zlkjzv430o7jah7VJNGc-9V7K6Cq16Q8_2rwHs/exec";
-
+const modoTeste = true;
 let db = JSON.parse(localStorage.getItem("ponto_db") || "[]");
 
 function registrar(){
@@ -9,8 +9,8 @@ const almocoSai = document.getElementById("almocoSai").value;
 const almocoVolta = document.getElementById("almocoVolta").value;
 const saida = document.getElementById("saida").value;
 
-if(!entrada || !saida){
-alert("Entrada e saída obrigatórios");
+if(!modoTeste && db.find(r => r.data === dataHoje)){
+alert("Registro de hoje já existe.");
 return;
 }
 
@@ -156,6 +156,7 @@ gerarGrafico();
 }
 
 };
+
 
 
 
