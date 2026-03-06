@@ -1,14 +1,16 @@
 let grafico;
+
 function gerarGrafico(){
     const ctx=document.getElementById("graficoHoras");
     if(!ctx) return;
-    const dados=JSON.parse(localStorage.getItem("ponto_db")||"{}");
-    const registros=Object.keys(dados).map(d=>({data:d,...dados[d]}));
-    if(registros.length===0) return;
-    const jornada=480;
-    const labels=registros.map(r=>r.data);
-    const horas=registros.map(r=>(jornada+(r.saldo||0))/60);
+    if(db.length===0) return;
+
+    const jornadaMin = 480;
+    const labels=db.map(d=>d.data);
+    const horas=db.map(d=>(jornadaMin + (d.saldo||0))/60);
+
     if(grafico) grafico.destroy();
+
     grafico=new Chart(ctx,{
         type:"bar",
         data:{
@@ -26,11 +28,20 @@ function gerarGrafico(){
             responsive:true,
             plugins:{
                 legend:{display:false},
-                tooltip:{callbacks:{label:function(ctx){const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);return `${h}h ${m}min`;}}}
+                tooltip:{
+                    callbacks:{
+                        label:function(context){
+                            let h=context.raw;
+                            let horas=Math.floor(h);
+                            let minutos=Math.round((h-horas)*60);
+                            return `${horas}h ${minutos}min`;
+                        }
+                    }
+                }
             },
             scales:{
-                y:{beginAtZero:true,title:{display:true,text:"Horas"}},
-                x:{title:{display:true,text:"Dias"}}
+                y:{beginAtZero:true, title:{display:true, text:"Horas"}},
+                x:{title:{display:true, text:"Dias"}}
             }
         }
     });
