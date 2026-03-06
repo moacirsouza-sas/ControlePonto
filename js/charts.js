@@ -1,48 +1,55 @@
 let grafico;
 
 function gerarGrafico(){
-    const ctx=document.getElementById("graficoHoras");
-    if(!ctx) return;
-    if(db.length===0) return;
 
-    const jornadaMin = 480;
-    const labels=db.map(d=>d.data);
-    const horas=db.map(d=>(jornadaMin + (d.saldo||0))/60);
+const ctx=document.getElementById("graficoHoras");
 
-    if(grafico) grafico.destroy();
+if(!ctx) return;
 
-    grafico=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels:labels,
-            datasets:[{
-                label:"Horas Trabalhadas",
-                data:horas,
-                backgroundColor:"rgba(54,162,235,0.6)",
-                borderColor:"rgba(54,162,235,1)",
-                borderWidth:1,
-                borderRadius:6
-            }]
-        },
-        options:{
-            responsive:true,
-            plugins:{
-                legend:{display:false},
-                tooltip:{
-                    callbacks:{
-                        label:function(context){
-                            let h=context.raw;
-                            let horas=Math.floor(h);
-                            let minutos=Math.round((h-horas)*60);
-                            return `${horas}h ${minutos}min`;
-                        }
-                    }
-                }
-            },
-            scales:{
-                y:{beginAtZero:true, title:{display:true, text:"Horas"}},
-                x:{title:{display:true, text:"Dias"}}
-            }
-        }
-    });
+let dados=JSON.parse(localStorage.getItem("dados")||'{"dias":{}}');
+
+let labels=[];
+let horas=[];
+
+Object.keys(dados.dias).forEach(data=>{
+
+let d=dados.dias[data];
+
+if(d.entrada && d.saida){
+
+let e=converter(d.entrada);
+let s=converter(d.saida);
+
+horas.push((s-e)/60);
+
+labels.push(data);
+
+}
+
+});
+
+if(grafico) grafico.destroy();
+
+grafico=new Chart(ctx,{
+
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Horas",
+data:horas
+}]
+}
+
+});
+
+}
+
+function converter(h){
+
+let p=h.split(":");
+
+return parseInt(p[0])*60+parseInt(p[1]);
+
 }
