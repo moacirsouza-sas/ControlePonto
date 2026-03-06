@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbz-WrdUUhpvXr5y946IpFZlcp--SwB4yIW_LNb_9YC6aF3-m3AMq-pTjwhvG2t7MkM/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzLc9b1aC2kRlGjL9LYrzaEnBcT65CWC76zhKc_Wig_qJodPuzOOGeYbMqa33sxrBo/exec";
 
 let db = JSON.parse(localStorage.getItem("ponto_db") || "[]");
 
@@ -156,5 +156,6 @@ gerarGrafico();
 }
 
 };
+
 
 
