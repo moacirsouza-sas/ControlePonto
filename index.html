@@ -23,7 +23,7 @@
         text-align: center;
         color: #333;
     }
-    #status {
+    #status, #horaAtual, #horasFeitas, #horasFaltantes, #horasExtra {
         margin: 10px 0;
         font-weight: bold;
         text-align: center;
@@ -56,6 +56,12 @@
 <div id="app">
     <h2>Ponto Pro</h2>
     <p id="status">Aguardando registro...</p>
+    <!-- NOVOS ELEMENTOS PARA HORAS -->
+    <p id="horaAtual">Horário do registro: --:--:--</p>
+    <p id="horasFeitas">Horas trabalhadas: 0h 0m</p>
+    <p id="horasFaltantes">Horas faltantes: 8h 0m</p>
+    <p id="horasExtra">Horas extras: 0h 0m</p>
+
     <div id="botoes">
         <button onclick="registrarEntrada()">Entrada</button>
         <button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
@@ -65,9 +71,7 @@
 </div>
 
 <script>
-const jornada = 8;
-
-// ATIVAR OU DESATIVAR TESTE
+const jornada = 8; // horas padrão
 let modoTeste = true;
 
 let dados = JSON.parse(localStorage.getItem("dados")) || {
@@ -97,12 +101,46 @@ function agora(){
     return new Date().toLocaleTimeString();
 }
 
+// FUNÇÃO PARA CALCULAR HORAS TRABALHADAS, FALTANTES E EXTRAS
+function calcularHoras() {
+    let entrada = dados.dias[hoje].entrada;
+    let almocoSai = dados.dias[hoje].saidaAlmoco;
+    let almocoVolta = dados.dias[hoje].voltaAlmoco;
+    let saida = dados.dias[hoje].saida;
+
+    if(!entrada) return;
+
+    function horaParaMinutos(hora){
+        let [h,m,s] = hora.split(":").map(Number);
+        return h*60 + m + (s||0)/60;
+    }
+
+    let minutosTrabalhados = 0;
+
+    if(entrada && saida){
+        minutosTrabalhados = horaParaMinutos(saida) - horaParaMinutos(entrada);
+        if(almocoSai && almocoVolta){
+            minutosTrabalhados -= (horaParaMinutos(almocoVolta) - horaParaMinutos(almocoSai));
+        }
+    }
+
+    let faltantes = jornada*60 - minutosTrabalhados;
+    let extra = minutosTrabalhados - jornada*60;
+
+    document.getElementById("horaAtual").innerText = "Horário do registro: " + agora();
+    document.getElementById("horasFeitas").innerText = `Horas trabalhadas: ${Math.floor(minutosTrabalhados/60)}h ${Math.floor(minutosTrabalhados%60)}m`;
+    document.getElementById("horasFaltantes").innerText = `Horas faltantes: ${faltantes>0?Math.floor(faltantes/60)+"h "+Math.floor(faltantes%60)+"m":"0h 0m"}`;
+    document.getElementById("horasExtra").innerText = `Horas extras: ${extra>0?Math.floor(extra/60)+"h "+Math.floor(extra%60)+"m":"0h 0m"}`;
+}
+
+// REGISTROS DE PONTO
 function registrarEntrada(){
     dados.dias[hoje].entrada = agora();
     dados.dias[hoje].gps = "teste";
     salvar();
     enviarServidor();
     document.getElementById("status").innerText = "Entrada registrada";
+    calcularHoras();
 }
 
 function registrarSaidaAlmoco(){
@@ -110,6 +148,7 @@ function registrarSaidaAlmoco(){
     salvar();
     enviarServidor();
     document.getElementById("status").innerText = "Saída almoço registrada";
+    calcularHoras();
 }
 
 function registrarVoltaAlmoco(){
@@ -117,6 +156,7 @@ function registrarVoltaAlmoco(){
     salvar();
     enviarServidor();
     document.getElementById("status").innerText = "Volta almoço registrada";
+    calcularHoras();
 }
 
 function registrarSaida(){
@@ -124,8 +164,10 @@ function registrarSaida(){
     salvar();
     enviarServidor();
     document.getElementById("status").innerText = "Saída registrada";
+    calcularHoras();
 }
 
+// ENVIO PARA GOOGLE SHEETS
 function enviarServidor(){
     fetch("https://script.google.com/macros/s/AKfycbzLc9b1aC2kRlGjL9LYrzaEnBcT65CWC76zhKc_Wig_qJodPuzOOGeYbMqa33sxrBo/exec", {
         method: "POST",
@@ -143,11 +185,12 @@ function enviarServidor(){
     .then(res => console.log(res))
     .catch(err => console.log(err));
 }
+
+// MOSTRAR HORAS AO CARREGAR A PÁGINA
+window.onload = ()=>{
+    if(dados.dias[hoje].entrada) calcularHoras();
+};
 </script>
 
 </body>
 </html>
-
-
-
-
