@@ -1,5 +1,8 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyERIOLmvKu5jwniMUfjnPDNjpW6Zlkjzv430o7jah7VJNGc-9V7K6Cq16Q8_2rwHs/exec";
+
+/* ATIVAR OU DESATIVAR TESTES */
 const modoTeste = true;
+
 let db = JSON.parse(localStorage.getItem("ponto_db") || "[]");
 
 function registrar(){
@@ -9,14 +12,15 @@ const almocoSai = document.getElementById("almocoSai").value;
 const almocoVolta = document.getElementById("almocoVolta").value;
 const saida = document.getElementById("saida").value;
 
-if(!modoTeste && db.find(r => r.data === dataHoje)){
-alert("Registro de hoje já existe.");
+if(!entrada || !saida){
+alert("Entrada e saída obrigatórios");
 return;
 }
 
 const dataHoje = new Date().toLocaleDateString("pt-BR");
 
-if(db.find(r => r.data === dataHoje)){
+/* BLOQUEIO DE REGISTRO DUPLICADO */
+if(!modoTeste && db.find(r => r.data === dataHoje)){
 alert("Registro de hoje já existe.");
 return;
 }
@@ -78,10 +82,13 @@ return `${sinal}${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
 function enviarGoogleSheets(d){
 
 fetch(API_URL,{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
+
 body:JSON.stringify({
 data:d.data,
 entrada:d.entrada,
@@ -91,6 +98,7 @@ saida:d.saida,
 saldo:d.saldo,
 geo:"gps"
 })
+
 })
 .then(r=>r.text())
 .then(res=>console.log("GoogleSheets:",res))
@@ -156,6 +164,7 @@ gerarGrafico();
 }
 
 };
+
 
 
 
