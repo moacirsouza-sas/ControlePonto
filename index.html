@@ -1,62 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ponto Pro</title>
+
 <link rel="stylesheet" href="style.css">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
+
 <body>
 
 <div class="container">
 
-    <h2>Ponto Pro</h2>
+<h2>Ponto Pro</h2>
 
-    <!-- Card de Status -->
-    <div class="card status-grid">
-        <p id="status">Aguardando registro...</p>
-        <p id="horaRegistro">Horário do registro: --:--:--</p>
-        <p id="horasFeitas">Horas trabalhadas: 0h 0m</p>
-        <p id="horasFaltantes">Horas faltantes: 0h 0m</p>
-        <p id="horasExtras">Horas extras: 0h 0m</p>
-    </div>
+<div class="card status">
 
-    <!-- Card de Botões -->
-    <div class="card botoes-grid">
-        <button onclick="registrarEntrada()">Entrada</button>
-        <button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
-        <button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
-        <button onclick="registrarSaida()">Saída</button>
-    </div>
+<p id="status">Aguardando registro...</p>
 
-    <!-- Card de Histórico -->
-    <div class="card">
-        <h3>Histórico</h3>
-        <table id="tabela">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Entrada</th>
-                    <th>Saída</th>
-                    <th>Saldo</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <button onclick="exportarCSV()">Exportar CSV</button>
-    </div>
+<div class="info">
+<div class="box azul">
+<span>Horário</span>
+<strong id="horaRegistro">--:--</strong>
+</div>
 
-    <!-- Card de Gráfico -->
-    <div class="card">
-        <h3>Gráfico de Horas</h3>
-        <canvas id="graficoHoras"></canvas>
-    </div>
+<div class="box verde">
+<span>Trabalhadas</span>
+<strong id="horasFeitas">0h 0m</strong>
+</div>
+
+<div class="box amarelo">
+<span>Faltantes</span>
+<strong id="horasFaltantes">0h 0m</strong>
+</div>
+
+<div class="box roxo">
+<span>Extras</span>
+<strong id="horasExtras">0h 0m</strong>
+</div>
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="botoes">
+
+<button onclick="registrarEntrada()">Entrada</button>
+<button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
+<button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
+<button onclick="registrarSaida()">Saída</button>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Histórico</h3>
+
+<table id="tabela">
+
+<thead>
+<tr>
+<th>Data</th>
+<th>Entrada</th>
+<th>Saída</th>
+<th>Saldo</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<button onclick="exportarCSV()">Exportar CSV</button>
+
+</div>
+
+<div class="card">
+
+<h3>Gráfico de Horas</h3>
+
+<canvas id="graficoHoras"></canvas>
+
+</div>
 
 </div>
 
 <script src="script.js"></script>
 <script src="charts.js"></script>
+
 </body>
 </html>
-
