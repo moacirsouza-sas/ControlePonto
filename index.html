@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 
 <meta charset="UTF-8">
@@ -17,59 +17,34 @@
 
 <div class="container">
 
-<h1>Ponto Pro</h1>
-
-<div class="status" id="status">
-Aguardando registro...
-</div>
-
-<div class="relogio">
-Horário do registro:
-<span id="horaRegistro">--:--:--</span>
-</div>
-
-<div class="cards">
+<h2>Ponto Pro</h2>
 
 <div class="card">
-<h3>Horas Trabalhadas</h3>
-<p id="horasTrabalhadas">0h 0m</p>
+
+<label>Entrada</label>
+<input type="time" id="entrada">
+
+<label>Saída Almoço</label>
+<input type="time" id="almocoSai">
+
+<label>Volta Almoço</label>
+<input type="time" id="almocoVolta">
+
+<label>Saída</label>
+<input type="time" id="saida">
+
+<button onclick="registrar()">Registrar</button>
+
+<button onclick="exportarCSV()">Exportar CSV</button>
+
 </div>
+
 
 <div class="card">
-<h3>Horas Faltantes</h3>
-<p id="horasFaltantes">0h 0m</p>
-</div>
 
-<div class="card">
-<h3>Horas Extras</h3>
-<p id="horasExtras">0h 0m</p>
-</div>
+<h3>Histórico</h3>
 
-</div>
-
-<div class="botoes">
-
-<button onclick="registrar('entrada')">
-Entrada
-</button>
-
-<button onclick="registrar('almocoSai')">
-Saída Almoço
-</button>
-
-<button onclick="registrar('almocoVolta')">
-Volta Almoço
-</button>
-
-<button onclick="registrar('saida')">
-Saída
-</button>
-
-</div>
-
-<h2>Histórico</h2>
-
-<table>
+<table id="tabela">
 
 <thead>
 
@@ -82,21 +57,26 @@ Saída
 
 </thead>
 
-<tbody id="historico"></tbody>
+<tbody></tbody>
 
 </table>
 
-<button class="exportar" onclick="exportarCSV()">
-Exportar CSV
-</button>
+</div>
 
-<h2>Gráfico de Horas</h2>
 
-<canvas id="grafico"></canvas>
+<div class="card">
+
+<h3>Gráfico de Horas</h3>
+
+<canvas id="graficoHoras"></canvas>
+
+</div>
 
 </div>
 
 <script src="script.js"></script>
+<script src="charts.js"></script>
 
 </body>
 </html>
+
