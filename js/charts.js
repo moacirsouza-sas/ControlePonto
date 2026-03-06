@@ -1,68 +1,36 @@
 let grafico;
-
 function gerarGrafico(){
-    const ctx = document.getElementById("graficoHoras");
+    const ctx=document.getElementById("graficoHoras");
     if(!ctx) return;
-
-    const dados = JSON.parse(localStorage.getItem("ponto_db") || "[]");
-    if(dados.length === 0){
-        console.log("Sem dados para gerar gráfico");
-        return;
-    }
-
-    const jornada = 480; // 8h em minutos
-
-    // Labels do gráfico: datas
-    const labels = dados.map(d => d.data);
-
-    // Horas trabalhadas: (jornada + saldo) / 60 = horas em decimal
-    const horas = dados.map(d => (jornada + (d.saldo || 0)) / 60);
-
-    // Se gráfico já existe, destruir antes de recriar
+    const dados=JSON.parse(localStorage.getItem("ponto_db")||"{}");
+    const registros=Object.keys(dados).map(d=>({data:d,...dados[d]}));
+    if(registros.length===0) return;
+    const jornada=480;
+    const labels=registros.map(r=>r.data);
+    const horas=registros.map(r=>(jornada+(r.saldo||0))/60);
     if(grafico) grafico.destroy();
-
-    grafico = new Chart(ctx,{
-        type: "bar",
+    grafico=new Chart(ctx,{
+        type:"bar",
         data:{
-            labels: labels,
+            labels:labels,
             datasets:[{
-                label: "Horas Trabalhadas",
-                data: horas,
-                backgroundColor: "rgba(54,162,235,0.6)",
-                borderColor: "rgba(54,162,235,1)",
-                borderWidth: 1,
-                borderRadius: 6
+                label:"Horas Trabalhadas",
+                data:horas,
+                backgroundColor:"rgba(54,162,235,0.6)",
+                borderColor:"rgba(54,162,235,1)",
+                borderWidth:1,
+                borderRadius:6
             }]
         },
         options:{
-            responsive: true,
+            responsive:true,
             plugins:{
-                legend:{ display:false },
-                tooltip:{
-                    callbacks:{
-                        label:function(context){
-                            const h = context.raw;
-                            const horas = Math.floor(h);
-                            const minutos = Math.round((h - horas) * 60);
-                            return `${horas}h ${minutos}min`;
-                        }
-                    }
-                }
+                legend:{display:false},
+                tooltip:{callbacks:{label:function(ctx){const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);return `${h}h ${m}min`;}}}
             },
             scales:{
-                y:{
-                    beginAtZero:true,
-                    title:{
-                        display:true,
-                        text:"Horas"
-                    }
-                },
-                x:{
-                    title:{
-                        display:true,
-                        text:"Dias"
-                    }
-                }
+                y:{beginAtZero:true,title:{display:true,text:"Horas"}},
+                x:{title:{display:true,text:"Dias"}}
             }
         }
     });
