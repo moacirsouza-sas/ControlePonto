@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyERIOLmvKu5jwniMUfjnPDNjpW6Zlkjzv430o7jah7VJNGc-9V7K6Cq16Q8_2rwHs/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwsyTEH5GsW1YAJR6Zu_N_u2mhPWl3K-leGqihpm_lPOIOx3vl24ZsUy23_DJU7wg0/exec";
 
 let db = JSON.parse(localStorage.getItem("ponto_db") || "{}");
 
@@ -116,3 +116,4 @@ link.click();
 }
 
 atualizarTela();
+
