@@ -10,23 +10,28 @@
 <body>
 
 <div class="container">
-    <h2>Ponto Pro</h2>
 
     <!-- CARD DE REGISTRO -->
     <div class="card">
-        <p id="status">Aguardando registro...</p>
-        <p id="horaAtual">Horário do registro: --:--:--</p>
-        <p id="horasFeitas">Horas trabalhadas: 0h 0m</p>
-        <p id="horasFaltantes">Horas faltantes: 0h 0m</p>
-        <p id="horasExtra">Horas extras: 0h 0m</p>
+        <h2>Ponto Pro</h2>
 
-        <button onclick="registrarEntrada()">Entrada</button>
-        <button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
-        <button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
-        <button onclick="registrarSaida()">Saída</button>
+        <div class="status-grid">
+            <p id="status">Aguardando registro...</p>
+            <p id="horaAtual">--:--:--</p>
+            <p id="horasFeitas">0h 0m</p>
+            <p id="horasFaltantes">0h 0m</p>
+            <p id="horasExtra">0h 0m</p>
+        </div>
+
+        <div class="botoes-grid">
+            <button onclick="registrarEntrada()">Entrada</button>
+            <button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
+            <button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
+            <button onclick="registrarSaida()">Saída</button>
+        </div>
     </div>
 
-    <!-- HISTÓRICO -->
+    <!-- CARD DE HISTÓRICO -->
     <div class="card">
         <h3>Histórico</h3>
         <table id="tabela">
@@ -43,11 +48,12 @@
         <button onclick="exportarCSV()">Exportar CSV</button>
     </div>
 
-    <!-- GRÁFICO -->
+    <!-- CARD DE GRÁFICO -->
     <div class="card">
         <h3>Gráfico de Horas</h3>
         <canvas id="graficoHoras"></canvas>
     </div>
+
 </div>
 
 <script src="script.js"></script>
