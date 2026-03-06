@@ -1,100 +1,139 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html>
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Ponto Pro</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<!-- Biblioteca do gráfico -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Scripts do projeto -->
-<script src="js/script.js" defer></script>
-<script src="js/charts.js" defer></script>
-
 </head>
 
 <body>
 
-<header>
+<h2>Ponto Pro</h2>
 
-<h1>Ponto Pro</h1>
+<p id="status">Aguardando registro...</p>
 
-</header>
+<button onclick="registrarEntrada()">Entrada</button>
+<button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
+<button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
+<button onclick="registrarSaida()">Saída</button>
 
-<main class="container">
+<script>
 
-<!-- REGISTRO DE PONTO -->
-<section class="card">
+const jornada = 8;
 
-<h3>Registro de Ponto</h3>
+// ATIVAR OU DESATIVAR TESTE
+let modoTeste = true;
 
-<label for="entrada">Entrada</label>
-<input type="time" id="entrada">
+let dados = JSON.parse(localStorage.getItem("dados")) || {
+  dias:{},
+  saldoTotal:0
+};
 
-<label for="almocoSai">Saída Almoço</label>
-<input type="time" id="almocoSai">
+let hoje = new Date().toLocaleDateString();
 
-<label for="almocoVolta">Volta Almoço</label>
-<input type="time" id="almocoVolta">
+if(!dados.dias[hoje] || modoTeste){
 
-<label for="saida">Saída</label>
-<input type="time" id="saida">
+  dados.dias[hoje] = {
 
-<div class="botoes">
+    entrada:null,
+    saidaAlmoco:null,
+    voltaAlmoco:null,
+    saida:null,
+    gps:null,
+    horas:0,
+    extra:0
 
-<button onclick="registrar()">Registrar</button>
+  };
 
-<button onclick="exportarCSV()">Exportar CSV</button>
+}
 
-</div>
+function salvar(){
 
-</section>
+localStorage.setItem("dados", JSON.stringify(dados));
 
+}
 
-<!-- HISTÓRICO -->
-<section class="card">
+function agora(){
 
-<h3>Histórico</h3>
+return new Date().toLocaleTimeString();
 
-<table id="tabela">
+}
 
-<thead>
+function registrarEntrada(){
 
-<tr>
-<th>Data</th>
-<th>Entrada</th>
-<th>Saída</th>
-<th>Saldo</th>
-</tr>
+dados.dias[hoje].entrada = agora();
+dados.dias[hoje].gps = "teste";
 
-</thead>
+salvar();
+enviarServidor();
 
-<tbody></tbody>
+document.getElementById("status").innerText = "Entrada registrada";
 
-</table>
+}
 
-</section>
+function registrarSaidaAlmoco(){
 
+dados.dias[hoje].saidaAlmoco = agora();
 
-<!-- GRÁFICO -->
-<section class="card">
+salvar();
+enviarServidor();
 
-<h3>Gráfico de Horas</h3>
+document.getElementById("status").innerText = "Saída almoço registrada";
 
-<canvas id="graficoHoras"></canvas>
+}
 
-</section>
+function registrarVoltaAlmoco(){
 
-</main>
+dados.dias[hoje].voltaAlmoco = agora();
+
+salvar();
+enviarServidor();
+
+document.getElementById("status").innerText = "Volta almoço registrada";
+
+}
+
+function registrarSaida(){
+
+dados.dias[hoje].saida = agora();
+
+salvar();
+enviarServidor();
+
+document.getElementById("status").innerText = "Saída registrada";
+
+}
+
+function enviarServidor(){
+
+fetch("https://script.google.com/macros/s/AKfycbzLc9b1aC2kRlGjL9LYrzaEnBcT65CWC76zhKc_Wig_qJodPuzOOGeYbMqa33sxrBo/exec", {
+
+method:"POST",
+
+body:JSON.stringify({
+
+data:hoje,
+entrada:dados.dias[hoje].entrada,
+almocoSai:dados.dias[hoje].saidaAlmoco,
+almocoVolta:dados.dias[hoje].voltaAlmoco,
+saida:dados.dias[hoje].saida,
+saldo:dados.saldoTotal,
+geo:dados.dias[hoje].gps
+
+})
+
+})
+
+.then(res => res.text())
+.then(res => console.log(res))
+.catch(err => console.log(err));
+
+}
+
+</script>
 
 </body>
 </html>
+
 
 
 
