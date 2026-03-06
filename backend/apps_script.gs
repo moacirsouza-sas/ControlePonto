@@ -2,19 +2,25 @@ function doPost(e) {
 
   try {
 
-    var aba = SpreadsheetApp
+    if (!e || !e.postData) {
+
+      return ContentService
+        .createTextOutput(JSON.stringify({
+          status: "erro",
+          mensagem: "Nenhum dado recebido"
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
+
+    }
+
+    const dados = JSON.parse(e.postData.contents);
+
+    const planilha = SpreadsheetApp
       .openById("1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE")
       .getSheets()[0];
 
-    if (!e || !e.postData) {
-      return ContentService
-        .createTextOutput("Nenhum dado recebido via POST")
-        .setMimeType(ContentService.MimeType.TEXT);
-    }
+    const linha = [
 
-    var dados = JSON.parse(e.postData.contents);
-
-    aba.appendRow([
       dados.data || "",
       dados.entrada || "",
       dados.almocoSai || "",
@@ -22,17 +28,25 @@ function doPost(e) {
       dados.saida || "",
       dados.saldo || "",
       dados.geo || ""
-    ]);
+
+    ];
+
+    planilha.appendRow(linha);
 
     return ContentService
-      .createTextOutput("OK")
-      .setMimeType(ContentService.MimeType.TEXT);
+      .createTextOutput(JSON.stringify({
+        status: "ok"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (erro) {
 
     return ContentService
-      .createTextOutput("Erro: " + erro.message)
-      .setMimeType(ContentService.MimeType.TEXT);
+      .createTextOutput(JSON.stringify({
+        status: "erro",
+        mensagem: erro.message
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
 
   }
 
