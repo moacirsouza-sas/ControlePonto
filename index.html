@@ -3,132 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <title>Ponto Pro</title>
+
+<!-- Estilos para layout e botões -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+    #app {
+        max-width: 400px;
+        margin: auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+    #status {
+        margin: 10px 0;
+        font-weight: bold;
+        text-align: center;
+        color: #555;
+    }
+    #botoes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    button {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+</style>
+
 </head>
 
 <body>
 
-<h2>Ponto Pro</h2>
-
-<p id="status">Aguardando registro...</p>
-
-<button onclick="registrarEntrada()">Entrada</button>
-<button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
-<button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
-<button onclick="registrarSaida()">Saída</button>
+<div id="app">
+    <h2>Ponto Pro</h2>
+    <p id="status">Aguardando registro...</p>
+    <div id="botoes">
+        <button onclick="registrarEntrada()">Entrada</button>
+        <button onclick="registrarSaidaAlmoco()">Saída Almoço</button>
+        <button onclick="registrarVoltaAlmoco()">Volta Almoço</button>
+        <button onclick="registrarSaida()">Saída</button>
+    </div>
+</div>
 
 <script>
-
 const jornada = 8;
 
 // ATIVAR OU DESATIVAR TESTE
 let modoTeste = true;
 
 let dados = JSON.parse(localStorage.getItem("dados")) || {
-  dias:{},
-  saldoTotal:0
+    dias: {},
+    saldoTotal: 0
 };
 
 let hoje = new Date().toLocaleDateString();
 
 if(!dados.dias[hoje] || modoTeste){
-
-  dados.dias[hoje] = {
-
-    entrada:null,
-    saidaAlmoco:null,
-    voltaAlmoco:null,
-    saida:null,
-    gps:null,
-    horas:0,
-    extra:0
-
-  };
-
+    dados.dias[hoje] = {
+        entrada: null,
+        saidaAlmoco: null,
+        voltaAlmoco: null,
+        saida: null,
+        gps: null,
+        horas: 0,
+        extra: 0
+    };
 }
 
 function salvar(){
-
-localStorage.setItem("dados", JSON.stringify(dados));
-
+    localStorage.setItem("dados", JSON.stringify(dados));
 }
 
 function agora(){
-
-return new Date().toLocaleTimeString();
-
+    return new Date().toLocaleTimeString();
 }
 
 function registrarEntrada(){
-
-dados.dias[hoje].entrada = agora();
-dados.dias[hoje].gps = "teste";
-
-salvar();
-enviarServidor();
-
-document.getElementById("status").innerText = "Entrada registrada";
-
+    dados.dias[hoje].entrada = agora();
+    dados.dias[hoje].gps = "teste";
+    salvar();
+    enviarServidor();
+    document.getElementById("status").innerText = "Entrada registrada";
 }
 
 function registrarSaidaAlmoco(){
-
-dados.dias[hoje].saidaAlmoco = agora();
-
-salvar();
-enviarServidor();
-
-document.getElementById("status").innerText = "Saída almoço registrada";
-
+    dados.dias[hoje].saidaAlmoco = agora();
+    salvar();
+    enviarServidor();
+    document.getElementById("status").innerText = "Saída almoço registrada";
 }
 
 function registrarVoltaAlmoco(){
-
-dados.dias[hoje].voltaAlmoco = agora();
-
-salvar();
-enviarServidor();
-
-document.getElementById("status").innerText = "Volta almoço registrada";
-
+    dados.dias[hoje].voltaAlmoco = agora();
+    salvar();
+    enviarServidor();
+    document.getElementById("status").innerText = "Volta almoço registrada";
 }
 
 function registrarSaida(){
-
-dados.dias[hoje].saida = agora();
-
-salvar();
-enviarServidor();
-
-document.getElementById("status").innerText = "Saída registrada";
-
+    dados.dias[hoje].saida = agora();
+    salvar();
+    enviarServidor();
+    document.getElementById("status").innerText = "Saída registrada";
 }
 
 function enviarServidor(){
-
-fetch("https://script.google.com/macros/s/AKfycbzLc9b1aC2kRlGjL9LYrzaEnBcT65CWC76zhKc_Wig_qJodPuzOOGeYbMqa33sxrBo/exec", {
-
-method:"POST",
-
-body:JSON.stringify({
-
-data:hoje,
-entrada:dados.dias[hoje].entrada,
-almocoSai:dados.dias[hoje].saidaAlmoco,
-almocoVolta:dados.dias[hoje].voltaAlmoco,
-saida:dados.dias[hoje].saida,
-saldo:dados.saldoTotal,
-geo:dados.dias[hoje].gps
-
-})
-
-})
-
-.then(res => res.text())
-.then(res => console.log(res))
-.catch(err => console.log(err));
-
+    fetch("https://script.google.com/macros/s/AKfycbzLc9b1aC2kRlGjL9LYrzaEnBcT65CWC76zhKc_Wig_qJodPuzOOGeYbMqa33sxrBo/exec", {
+        method: "POST",
+        body: JSON.stringify({
+            data: hoje,
+            entrada: dados.dias[hoje].entrada,
+            almocoSai: dados.dias[hoje].saidaAlmoco,
+            almocoVolta: dados.dias[hoje].voltaAlmoco,
+            saida: dados.dias[hoje].saida,
+            saldo: dados.saldoTotal,
+            geo: dados.dias[hoje].gps
+        })
+    })
+    .then(res => res.text())
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
 }
-
 </script>
 
 </body>
