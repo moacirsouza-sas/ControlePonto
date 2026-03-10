@@ -2,21 +2,21 @@ let grafico
 
 function gerarGrafico(){
 
-const ctx=document.getElementById("graficoHoras")
+const canvas=document.getElementById("graficoHoras")
 
-if(!ctx) return
+if(!canvas) return
 
-const dados=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+const dados=JSON.parse(localStorage.getItem("ponto_db") || "[]")
 
 if(dados.length===0) return
 
 const labels=dados.map(d=>d.data)
 
-const horas=dados.map(d=>(480+(d.saldo||0))/60)
+const horas=dados.map(d=>((480+(d.saldo||0))/60).toFixed(2))
 
 if(grafico) grafico.destroy()
 
-grafico=new Chart(ctx,{
+grafico=new Chart(canvas,{
 
 type:"bar",
 
@@ -40,10 +40,24 @@ options:{
 
 responsive:true,
 
-plugins:{legend:{display:false}}
+plugins:{
+legend:{display:false}
+},
+
+scales:{
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Horas"
+}
+}
+}
 
 }
 
 })
 
 }
+
+window.onload=gerarGrafico
