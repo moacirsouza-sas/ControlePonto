@@ -1,6 +1,6 @@
 const API="https://script.google.com/macros/s/AKfycbwdhnnoTzV-U-if6fvjb2uI7e-1wJxUebQ8HM4IqXsI9rD4EFCjW6v4HpRE9YFTEtU/exec"
 
-let hoje=new Date().toLocaleDateString()
+let hoje=new Date().toLocaleDateString("pt-BR")
 
 document.getElementById("dataHoje").innerText=hoje
 
@@ -15,7 +15,7 @@ saida:null
 
 function hora(){
 
-return new Date().toLocaleTimeString()
+return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})
 
 }
 
@@ -42,16 +42,29 @@ document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
 
 }
 
-else{
+else if(!dados.saida){
 
 dados.saida=hora()
 document.getElementById("saidaFinal").innerText=dados.saida
 
 }
 
+else{
+
+alert("Todos os registros do dia já foram feitos.")
+
+}
+
 }
 
 function arquivarDia(){
+
+if(!dados.entrada || !dados.saida){
+
+alert("Registro incompleto.")
+return
+
+}
 
 fetch(API,{
 
@@ -72,24 +85,43 @@ geo:"gps"
 })
 
 .then(r=>r.text())
-.then(r=>alert("Registro enviado"))
+.then(r=>{
+
+alert("Registro enviado com sucesso")
+resetarDia()
+
+})
+.catch(()=>alert("Erro ao enviar registro"))
 
 }
 
 function resetarDia(){
 
-location.reload()
+dados={
+
+entrada:null,
+almocoSai:null,
+almocoVolta:null,
+saida:null
+
+}
+
+document.getElementById("entrada").innerText="--:--"
+document.getElementById("saidaAlmoco").innerText="--:--"
+document.getElementById("voltaAlmoco").innerText="--:--"
+document.getElementById("saidaFinal").innerText="--:--"
 
 }
 
 function baixarCSV(){
 
-alert("CSV em desenvolvimento")
+alert("Exportação CSV em desenvolvimento")
 
 }
 
 function abrirPlanilha(){
 
-window.open("https://docs.google.com/spreadsheets")
+window.open("https://docs.google.com/spreadsheets","_blank")
 
 }
+
