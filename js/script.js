@@ -1,160 +1,95 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwsyTEH5GsW1YAJR6Zu_N_u2mhPWl3K-leGqihpm_lPOIOx3vl24ZsUy23_DJU7wg0/exec";
+const API="https://script.google.com/macros/s/AKfycbwdhnnoTzV-U-if6fvjb2uI7e-1wJxUebQ8HM4IqXsI9rD4EFCjW6v4HpRE9YFTEtU/exec"
 
-let db=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+let hoje=new Date().toLocaleDateString()
 
-function registrar(){
+document.getElementById("dataHoje").innerText=hoje
 
-const entrada=document.getElementById("entrada").value
-const almocoSai=document.getElementById("almocoSai").value
-const almocoVolta=document.getElementById("almocoVolta").value
-const saida=document.getElementById("saida").value
+let dados={
 
-if(!entrada||!saida){
-
-alert("Entrada e saída obrigatórias")
-return
+entrada:null,
+almocoSai:null,
+almocoVolta:null,
+saida:null
 
 }
 
-const dataHoje=new Date().toLocaleDateString("pt-BR")
+function hora(){
 
-const minutosEntrada=converterMinutos(entrada)
-const minutosSaida=converterMinutos(saida)
-
-let minutosTrabalhados=minutosSaida-minutosEntrada
-
-if(almocoSai&&almocoVolta){
-
-const minutosAlmoco=
-converterMinutos(almocoVolta)-converterMinutos(almocoSai)
-
-minutosTrabalhados-=minutosAlmoco
+return new Date().toLocaleTimeString()
 
 }
 
-const saldo=minutosTrabalhados-480
+function registrarAgora(){
 
-const registro={
+if(!dados.entrada){
 
-data:dataHoje,
-entrada,
-almocoSai,
-almocoVolta,
-saida,
-saldo
+dados.entrada=hora()
+document.getElementById("entrada").innerText=dados.entrada
 
 }
 
-db.push(registro)
+else if(!dados.almocoSai){
 
-localStorage.setItem("ponto_db",JSON.stringify(db))
-
-enviarGoogleSheets(registro)
-
-renderizarHistorico()
-
-if(typeof gerarGrafico==="function") gerarGrafico()
+dados.almocoSai=hora()
+document.getElementById("saidaAlmoco").innerText=dados.almocoSai
 
 }
 
-function converterMinutos(h){
+else if(!dados.almocoVolta){
 
-const[t,m]=h.split(":").map(Number)
-
-return t*60+m
-
-}
-
-function formatarSaldo(min){
-
-const sinal=min>=0?"+":"-"
-
-min=Math.abs(min)
-
-const h=Math.floor(min/60)
-const m=min%60
-
-return `${sinal}${h}h ${m}m`
+dados.almocoVolta=hora()
+document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
 
 }
 
-function enviarGoogleSheets(d){
+else{
 
-fetch(API_URL,{
+dados.saida=hora()
+document.getElementById("saidaFinal").innerText=dados.saida
+
+}
+
+}
+
+function arquivarDia(){
+
+fetch(API,{
 
 method:"POST",
 
 body:JSON.stringify({
 
-data:d.data,
-entrada:d.entrada,
-almocoSai:d.almocoSai,
-almocoVolta:d.almocoVolta,
-saida:d.saida,
-saldo:d.saldo,
-geo:"app"
+data:hoje,
+entrada:dados.entrada,
+almocoSai:dados.almocoSai,
+almocoVolta:dados.almocoVolta,
+saida:dados.saida,
+saldo:0,
+geo:"gps"
 
 })
 
 })
 
 .then(r=>r.text())
-.then(r=>console.log("Planilha:",r))
-.catch(e=>console.log("Erro:",e))
+.then(r=>alert("Registro enviado"))
 
 }
 
-function renderizarHistorico(){
+function resetarDia(){
 
-const tbody=document.querySelector("#tabela tbody")
-
-tbody.innerHTML=""
-
-db.slice().reverse().forEach(r=>{
-
-const tr=document.createElement("tr")
-
-tr.innerHTML=`
-
-<td>${r.data}</td>
-<td>${r.entrada}</td>
-<td>${r.saida}</td>
-<td>${formatarSaldo(r.saldo)}</td>
-
-`
-
-tbody.appendChild(tr)
-
-})
+location.reload()
 
 }
 
-function exportarCSV(){
+function baixarCSV(){
 
-let csv="Data,Entrada,Saida,Saldo\n"
-
-db.forEach(r=>{
-
-csv+=`${r.data},${r.entrada},${r.saida},${r.saldo}\n`
-
-})
-
-const blob=new Blob([csv],{type:"text/csv"})
-
-const a=document.createElement("a")
-
-a.href=URL.createObjectURL(blob)
-
-a.download="ponto.csv"
-
-a.click()
+alert("CSV em desenvolvimento")
 
 }
 
-window.onload=()=>{
+function abrirPlanilha(){
 
-renderizarHistorico()
-
-if(typeof gerarGrafico==="function") gerarGrafico()
+window.open("https://docs.google.com/spreadsheets")
 
 }
