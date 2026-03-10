@@ -88,6 +88,9 @@ geo:"gps"
 .then(r=>{
 
 alert("Registro enviado com sucesso")
+
+salvarLocal()
+
 resetarDia()
 
 })
@@ -115,7 +118,32 @@ document.getElementById("saidaFinal").innerText="--:--"
 
 function baixarCSV(){
 
-alert("Exportação CSV em desenvolvimento")
+let dados=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+
+if(dados.length===0){
+
+alert("Sem dados para exportar")
+return
+
+}
+
+let csv="Data,Entrada,Saida\n"
+
+dados.forEach(d=>{
+
+csv+=`${d.data},${d.entrada},${d.saida}\n`
+
+})
+
+let blob=new Blob([csv],{type:"text/csv"})
+
+let url=URL.createObjectURL(blob)
+
+let a=document.createElement("a")
+
+a.href=url
+a.download="ponto.csv"
+a.click()
 
 }
 
@@ -124,4 +152,51 @@ function abrirPlanilha(){
 window.open("https://docs.google.com/spreadsheets","_blank")
 
 }
+
+function salvarLocal(){
+
+let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+
+banco.push({
+
+data:hoje,
+entrada:dados.entrada,
+saida:dados.saida,
+saldo:0
+
+})
+
+localStorage.setItem("ponto_db",JSON.stringify(banco))
+
+carregarHistorico()
+
+}
+
+function carregarHistorico(){
+
+let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+
+let tabela=document.querySelector("#historico tbody")
+
+tabela.innerHTML=""
+
+banco.slice(-5).reverse().forEach(d=>{
+
+let tr=document.createElement("tr")
+
+tr.innerHTML=`
+
+<td>${d.data}</td>
+<td>${d.entrada}</td>
+<td>${d.saida}</td>
+
+`
+
+tabela.appendChild(tr)
+
+})
+
+}
+
+carregarHistorico()
 
