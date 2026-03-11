@@ -60,10 +60,33 @@
 Arquivar Registro do Dia
 </button>
 
-  <button class="btn-ajuste" onclick="abrirAjuste()">
+<button class="btn-ajuste" onclick="abrirAjuste()">
 ✏ Ajustar Horário
 </button>
-  
+
+<!-- PAINEL DE AJUSTE -->
+<div id="painelAjuste" style="display:none;margin-top:15px;">
+
+<h3>Ajustar Horários</h3>
+
+<label>Entrada</label>
+<input type="time" id="ajEntrada">
+
+<label>Saída Almoço</label>
+<input type="time" id="ajAlmocoSai">
+
+<label>Volta Almoço</label>
+<input type="time" id="ajAlmocoVolta">
+
+<label>Saída Final</label>
+<input type="time" id="ajSaida">
+
+<button onclick="salvarAjuste()" class="btn-arquivar">
+Salvar Ajuste
+</button>
+
+</div>
+
 <div class="acoes">
 
 <button onclick="resetarDia()" class="resetar">
