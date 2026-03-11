@@ -15,7 +15,7 @@ saida:null
 
 function hora(){
 
-return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})
+return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
 
 }
 
@@ -85,12 +85,11 @@ geo:"gps"
 })
 
 .then(r=>r.text())
-.then(r=>{
+.then(()=>{
 
 alert("Registro enviado com sucesso")
 
 salvarLocal()
-
 resetarDia()
 
 })
@@ -118,20 +117,20 @@ document.getElementById("saidaFinal").innerText="--:--"
 
 function baixarCSV(){
 
-let dados=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
 
-if(dados.length===0){
+if(banco.length===0){
 
 alert("Sem dados para exportar")
 return
 
 }
 
-let csv="Data,Entrada,Saida\n"
+let csv="Data,Entrada,SaidaAlmoco,VoltaAlmoco,Saida\n"
 
-dados.forEach(d=>{
+banco.forEach(d=>{
 
-csv+=`${d.data},${d.entrada},${d.saida}\n`
+csv+=`${d.data},${d.entrada},${d.almocoSai||""},${d.almocoVolta||""},${d.saida}\n`
 
 })
 
@@ -161,6 +160,8 @@ banco.push({
 
 data:hoje,
 entrada:dados.entrada,
+almocoSai:dados.almocoSai,
+almocoVolta:dados.almocoVolta,
 saida:dados.saida,
 saldo:0
 
@@ -204,7 +205,7 @@ function abrirAjuste(){
 
 const painel=document.getElementById("painelAjuste")
 
-if(painel.style.display==="none"){
+if(painel.style.display==="none" || painel.style.display===""){
 
 painel.style.display="block"
 
@@ -243,5 +244,3 @@ document.getElementById("saidaFinal").innerText=dados.saida
 alert("Horário ajustado")
 
 }
-
-
