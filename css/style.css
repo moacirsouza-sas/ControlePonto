@@ -191,4 +191,36 @@ text-align:center;
 
 }
 
+#painelAjuste{
+
+background:white;
+padding:15px;
+border-radius:12px;
+margin-top:15px;
+
+}
+
+#painelAjuste input{
+
+width:100%;
+padding:8px;
+margin-bottom:10px;
+border:1px solid #ccc;
+border-radius:6px;
+
+}
+
+.btn-ajuste{
+
+margin-top:10px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#f59e0b;
+color:white;
+
+}
+
+
 
