@@ -1,12 +1,13 @@
 body{
 
-font-family:Arial;
+font-family:Arial, sans-serif;
 background:#e5e7eb;
 display:flex;
 justify-content:center;
 align-items:center;
 min-height:100vh;
 padding:20px;
+margin:0;
 
 }
 
@@ -25,6 +26,7 @@ h1{
 
 text-align:center;
 color:#6366f1;
+margin-bottom:5px;
 
 }
 
@@ -40,12 +42,14 @@ button{
 
 cursor:pointer;
 transition:0.2s;
+font-weight:600;
 
 }
 
 button:hover{
 
 opacity:0.9;
+transform:scale(1.02);
 
 }
 
@@ -76,6 +80,7 @@ background:white;
 padding:15px;
 border-radius:10px;
 text-align:center;
+box-shadow:0 2px 5px rgba(0,0,0,0.05);
 
 }
 
@@ -108,6 +113,7 @@ margin-top:20px;
 
 font-size:40px;
 color:#6366f1;
+font-weight:bold;
 
 }
 
@@ -180,6 +186,7 @@ table{
 width:100%;
 margin-top:20px;
 border-collapse:collapse;
+font-size:14px;
 
 }
 
@@ -191,12 +198,19 @@ text-align:center;
 
 }
 
+th{
+
+color:#374151;
+
+}
+
 #painelAjuste{
 
 background:white;
 padding:15px;
 border-radius:12px;
 margin-top:15px;
+box-shadow:0 2px 5px rgba(0,0,0,0.05);
 
 }
 
@@ -221,6 +235,4 @@ background:#f59e0b;
 color:white;
 
 }
-
-
 
