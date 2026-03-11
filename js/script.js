@@ -1,5 +1,7 @@
 const API="https://script.google.com/macros/s/AKfycbye-H3LzD2R_WpisAVm6i4hn3ZnRQlFKBJu4XM32UplR4s4KcaC08FVGulKxjdfonc/exec"
 
+const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit#gid=0"
+
 let hoje=new Date().toLocaleDateString("pt-BR")
 
 document.getElementById("dataHoje").innerText=hoje
@@ -115,6 +117,12 @@ document.getElementById("saidaFinal").innerText="--:--"
 
 }
 
+function abrirPlanilha(){
+
+window.open(PLANILHA,"_blank")
+
+}
+
 function baixarCSV(){
 
 let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
@@ -146,12 +154,6 @@ a.click()
 
 }
 
-function abrirPlanilha(){
-
-window.open("https://docs.google.com/spreadsheets","_blank")
-
-}
-
 function salvarLocal(){
 
 let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
@@ -170,6 +172,8 @@ saldo:0
 localStorage.setItem("ponto_db",JSON.stringify(banco))
 
 carregarHistorico()
+
+gerarGrafico()
 
 }
 
@@ -198,8 +202,6 @@ tabela.appendChild(tr)
 })
 
 }
-
-carregarHistorico()
 
 function abrirAjuste(){
 
@@ -244,5 +246,68 @@ document.getElementById("saidaFinal").innerText=dados.saida
 alert("Horário ajustado")
 
 }
+
+let grafico
+
+function gerarGrafico(){
+
+const canvas=document.getElementById("graficoHoras")
+
+if(!canvas) return
+
+if(typeof Chart==="undefined") return
+
+const dados=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+
+if(dados.length===0) return
+
+const labels=dados.map(d=>d.data)
+
+const horas=dados.map(d=>((480+(d.saldo||0))/60).toFixed(2))
+
+if(grafico) grafico.destroy()
+
+grafico=new Chart(canvas,{
+
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Horas Trabalhadas",
+data:horas,
+backgroundColor:"rgba(54,162,235,0.6)"
+}]
+},
+
+options:{
+responsive:true,
+
+plugins:{
+legend:{display:false}
+},
+
+scales:{
+y:{
+beginAtZero:true,
+title:{
+display:true,
+text:"Horas"
+}
+}
+}
+
+}
+
+})
+
+}
+
+window.addEventListener("load",()=>{
+
+carregarHistorico()
+gerarGrafico()
+
+})
 
 
