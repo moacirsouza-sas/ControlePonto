@@ -200,3 +200,48 @@ tabela.appendChild(tr)
 
 carregarHistorico()
 
+function abrirAjuste(){
+
+const painel=document.getElementById("painelAjuste")
+
+if(painel.style.display==="none"){
+
+painel.style.display="block"
+
+document.getElementById("ajEntrada").value=dados.entrada||""
+document.getElementById("ajAlmocoSai").value=dados.almocoSai||""
+document.getElementById("ajAlmocoVolta").value=dados.almocoVolta||""
+document.getElementById("ajSaida").value=dados.saida||""
+
+}else{
+
+painel.style.display="none"
+
+}
+
+}
+
+function salvarAjuste(){
+
+dados.entrada=document.getElementById("ajEntrada").value
+dados.almocoSai=document.getElementById("ajAlmocoSai").value
+dados.almocoVolta=document.getElementById("ajAlmocoVolta").value
+dados.saida=document.getElementById("ajSaida").value
+
+if(dados.entrada)
+document.getElementById("entrada").innerText=dados.entrada
+
+if(dados.almocoSai)
+document.getElementById("saidaAlmoco").innerText=dados.almocoSai
+
+if(dados.almocoVolta)
+document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
+
+if(dados.saida)
+document.getElementById("saidaFinal").innerText=dados.saida
+
+alert("Horário ajustado")
+
+}
+
+
