@@ -10,6 +10,10 @@ function doPost(e){
 
 try{
 
+if(!e || !e.postData){
+throw "Requisição inválida";
+}
+
 const SPREADSHEET_ID = "1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE";
 
 const aba = SpreadsheetApp
@@ -35,13 +39,13 @@ const dados = JSON.parse(e.postData.contents);
 
 aba.appendRow([
 
-dados.data,
-dados.entrada,
-dados.almocoSai,
-dados.almocoVolta,
-dados.saida,
-dados.saldo,
-dados.geo,
+dados.data || "",
+dados.entrada || "",
+dados.almocoSai || "",
+dados.almocoVolta || "",
+dados.saida || "",
+dados.saldo || 0,
+dados.geo || "",
 new Date()
 
 ]);
