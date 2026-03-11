@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbyn7YVTAysWJJIzhzXUvVYsZGcJk1XUpjXJxg6Of7ZdRNjC9iga53ZktuvMzD8pd_o/exec"
+const API="https://script.google.com/macros/s/AKfycbye-H3LzD2R_WpisAVm6i4hn3ZnRQlFKBJu4XM32UplR4s4KcaC08FVGulKxjdfonc/exec"
 
 let hoje=new Date().toLocaleDateString("pt-BR")
 
@@ -244,4 +244,5 @@ document.getElementById("saidaFinal").innerText=dados.saida
 alert("Horário ajustado")
 
 }
+
 
