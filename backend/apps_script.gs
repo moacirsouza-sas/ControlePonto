@@ -1,71 +1,41 @@
-function doGet() {
-
-return ContentService
-.createTextOutput("API Ponto Pro funcionando")
-.setMimeType(ContentService.MimeType.TEXT);
-
-}
-
 function doPost(e){
 
-try{
+const SPREADSHEET_ID="1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE"
 
-const SPREADSHEET_ID="1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE";
-
-const aba = SpreadsheetApp
+const aba=SpreadsheetApp
 .openById(SPREADSHEET_ID)
-.getSheets()[0];
+.getSheets()[0]
 
-const dados = JSON.parse(e.postData.contents);
+const dados=JSON.parse(e.postData.contents)
 
-// horários seguros (evita erro se faltar almoço)
-const entrada = dados.entrada || "00:00";
-const almocoSai = dados.almocoSai || entrada;
-const almocoVolta = dados.almocoVolta || entrada;
-const saida = dados.saida || "00:00";
+const entrada=new Date("1970-01-01T"+dados.entrada+":00")
+const almocoSai=new Date("1970-01-01T"+dados.almocoSai+":00")
+const almocoVolta=new Date("1970-01-01T"+dados.almocoVolta+":00")
+const saida=new Date("1970-01-01T"+dados.saida+":00")
 
-// converter horários
-const e1 = new Date("1970-01-01T"+entrada+":00");
-const e2 = new Date("1970-01-01T"+almocoSai+":00");
-const e3 = new Date("1970-01-01T"+almocoVolta+":00");
-const e4 = new Date("1970-01-01T"+saida+":00");
+const manha=(almocoSai-entrada)
+const tarde=(saida-almocoVolta)
 
-// cálculo de horas
-const manha = (e2 - e1);
-const tarde = (e4 - e3);
+const total=(manha+tarde)/60000
 
-const totalMin = Math.round((manha + tarde) / 60000);
+const jornada=480
 
-// jornada padrão 8h
-const jornada = 480;
+const saldo=total-jornada
 
-const saldo = totalMin - jornada;
-
-// registrar na planilha
 aba.appendRow([
 
-dados.data || "",
-entrada,
-almocoSai,
-almocoVolta,
-saida,
-totalMin,
+dados.data,
+dados.entrada,
+dados.almocoSai,
+dados.almocoVolta,
+dados.saida,
+total,
 saldo,
-dados.geo || "",
+dados.geo,
 new Date()
 
-]);
+])
 
-return ContentService
-.createTextOutput("OK")
-.setMimeType(ContentService.MimeType.TEXT);
-
-}catch(err){
-
-return ContentService
-.createTextOutput("ERRO: "+err)
-.setMimeType(ContentService.MimeType.TEXT);
-
-}
+return ContentService.createTextOutput("OK")
 
 }
