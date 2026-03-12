@@ -1,132 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Ponto Pro</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto Pro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://jsdelivr.net"></script>
 </head>
-
 <body>
+    <div class="app">
+        <h1>Ponto Pro</h1>
+        <p id="dataHoje"></p>
 
-<div class="app">
+        <button class="btn-principal" onclick="registrarAgora()">📍 Registrar Agora</button>
 
-<h1>Ponto Pro</h1>
+        <div class="grid">
+            <div class="card"><span>ENTRADA</span><strong id="entrada">--:--</strong></div>
+            <div class="card"><span>SAÍDA ALMOÇO</span><strong id="saidaAlmoco">--:--</strong></div>
+            <div class="card"><span>VOLTA ALMOÇO</span><strong id="voltaAlmoco">--:--</strong></div>
+            <div class="card"><span>SAÍDA FINAL</span><strong id="saidaFinal">--:--</strong></div>
+        </div>
 
-<p id="dataHoje"></p>
+        <div class="timer">
+            <span id="cronometro">00:00:00</span>
+            <p class="gps">GPS aguardando...</p>
+            <p id="endereco"></p>
+        </div>
 
-<button class="btn-principal" onclick="registrarAgora()">
-📍 Registrar Agora
-</button>
+        <div id="mapa"></div>
+        <div id="statusSync" class="sync">🟡 aguardando registro</div>
 
-<div class="grid">
+        <button class="btn-arquivar" onclick="arquivarDia()">Arquivar Registro do Dia</button>
+        <button class="btn-ajuste" onclick="abrirAjuste()">✏ Ajustar Horário</button>
 
-<div class="card">
-<span>ENTRADA</span>
-<strong id="entrada">--:--</strong>
-</div>
+        <div id="painelAjuste" style="display:none">
+            <input type="time" id="ajEntrada">
+            <input type="time" id="ajAlmocoSai">
+            <input type="time" id="ajAlmocoVolta">
+            <input type="time" id="ajSaida">
+            <button onclick="salvarAjuste()">Salvar Ajuste</button>
+        </div>
 
-<div class="card">
-<span>SAÍDA ALMOÇO</span>
-<strong id="saidaAlmoco">--:--</strong>
-</div>
+        <div class="acoes">
+            <button onclick="resetarDia()" class="resetar">🗑 Resetar Dia</button>
+            <button onclick="baixarCSV()" class="csv">📊 Baixar CSV</button>
+        </div>
 
-<div class="card">
-<span>VOLTA ALMOÇO</span>
-<strong id="voltaAlmoco">--:--</strong>
-</div>
+        <button class="planilha" onclick="abrirPlanilha()">🌐 Abrir Planilha Google</button>
 
-<div class="card">
-<span>SAÍDA FINAL</span>
-<strong id="saidaFinal">--:--</strong>
-</div>
+        <h2>Histórico Recente</h2>
+        <table id="historico">
+            <thead><tr><th>Data</th><th>Entrada</th><th>Saída</th></tr></thead>
+            <tbody></tbody>
+        </table>
 
-</div>
-
-<div class="timer">
-
-<span id="cronometro">00:00:00</span>
-
-<p class="gps">GPS aguardando...</p>
-
-<p id="endereco"></p>
-
-</div>
-
-<div id="mapa"></div>
-
-<div id="statusSync" class="sync">
-🟡 aguardando sincronização
-</div>
-
-<button class="btn-arquivar" onclick="arquivarDia()">
-Arquivar Registro do Dia
-</button>
-
-<button class="btn-ajuste" onclick="abrirAjuste()">
-✏ Ajustar Horário
-</button>
-
-<div id="painelAjuste" style="display:none">
-
-<input type="time" id="ajEntrada">
-<input type="time" id="ajAlmocoSai">
-<input type="time" id="ajAlmocoVolta">
-<input type="time" id="ajSaida">
-
-<button onclick="salvarAjuste()">Salvar Ajuste</button>
-
-</div>
-
-<div class="acoes">
-
-<button onclick="resetarDia()" class="resetar">
-🗑 Resetar Dia
-</button>
-
-<button onclick="baixarCSV()" class="csv">
-📊 Baixar CSV
-</button>
-
-</div>
-
-<button class="planilha" onclick="abrirPlanilha()">
-🌐 Abrir Planilha Google
-</button>
-
-<h2>Histórico Recente</h2>
-
-<table id="historico">
-
-<thead>
-<tr>
-<th>Data</th>
-<th>Entrada</th>
-<th>Saída</th>
-</tr>
-</thead>
-
-<tbody></tbody>
-
-</table>
-
-<h2>Horas Trabalhadas</h2>
-
-<canvas id="graficoHoras"></canvas>
-
-</div>
-
-<script src="js/script.js"></script>
-<script src="js/charts.js"></script>
-
+        <h2>Horas Trabalhadas</h2>
+        <div style="position: relative; height:200px; width:100%">
+            <canvas id="graficoHoras"></canvas>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+    <script src="js/charts.js"></script>
 </body>
 </html>
+
 
 
