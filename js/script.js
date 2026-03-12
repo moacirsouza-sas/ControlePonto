@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbyPRLEkiijyuuwC_s917FNjj15aGvDdIzGBw_hAYsJfJrOvZiUnnR60xNu0fQfnLRU/exec"
+const API="https://script.google.com/macros/s/AKfycbyRAyYdpFB_VLhbCCPPccto5-5-ywbQRFRSVR1eaNB1II0vPCMyNK22iBqpwfJtdPo/exec"
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
 
@@ -267,6 +267,7 @@ carregarHistorico()
 gerarGrafico()
 
 })
+
 
 
 
