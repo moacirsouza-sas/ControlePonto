@@ -1,6 +1,6 @@
 const API="https://script.google.com/macros/s/AKfycbyRAyYdpFB_VLhbCCPPccto5-5-ywbQRFRSVR1eaNB1II0vPCMyNK22iBqpwfJtdPo/exec"
 
-const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
+const PLANILHA="https://docs.google.com/spreadsheets/d/SEU_ID"
 
 let hoje=new Date().toLocaleDateString("pt-BR")
 
@@ -10,36 +10,48 @@ let gps=""
 let endereco=""
 
 let dados={
+
 entrada:null,
 almocoSai:null,
 almocoVolta:null,
 saida:null
+
 }
 
 function hora(){
+
 return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
+
 }
 
 function registrarAgora(){
 
 if(!dados.entrada){
+
 dados.entrada=hora()
 document.getElementById("entrada").innerText=dados.entrada
+
 }
 
 else if(!dados.almocoSai){
+
 dados.almocoSai=hora()
 document.getElementById("saidaAlmoco").innerText=dados.almocoSai
+
 }
 
 else if(!dados.almocoVolta){
+
 dados.almocoVolta=hora()
 document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
+
 }
 
 else if(!dados.saida){
+
 dados.saida=hora()
 document.getElementById("saidaFinal").innerText=dados.saida
+
 }
 
 }
@@ -87,7 +99,8 @@ function mostrarMapa(lat,lon){
 
 document.getElementById("mapa").innerHTML=
 
-`<iframe width="100%" height="200" src="https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed"></iframe>`
+`<iframe width="100%" height="200"
+src="https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed"></iframe>`
 
 }
 
@@ -107,9 +120,22 @@ document.getElementById("endereco").innerText=endereco
 
 function arquivarDia(){
 
+if(!dados.entrada || !dados.saida){
+
+alert("Registro incompleto")
+return
+
+}
+
+document.getElementById("statusSync").innerText="🟡 enviando..."
+
 fetch(API,{
 
 method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
 
 body:JSON.stringify({
 
@@ -123,108 +149,42 @@ geo:gps+" | "+endereco
 })
 
 })
+
 .then(()=>{
 
-alert("Registro enviado")
+document.getElementById("statusSync").innerText="🟢 sincronizado"
 
 salvarLocal()
 
 resetarDia()
 
 })
+
 .catch(()=>{
 
-alert("Erro ao enviar")
+document.getElementById("statusSync").innerText="🔴 erro — tentando novamente"
 
-})
-
-}
-
-function salvarLocal(){
-
-let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
-
-banco.push({
-
-data:hoje,
-entrada:dados.entrada,
-almocoSai:dados.almocoSai,
-almocoVolta:dados.almocoVolta,
-saida:dados.saida
-
-})
-
-localStorage.setItem("ponto_db",JSON.stringify(banco))
-
-carregarHistorico()
-
-gerarGrafico()
-
-}
-
-function carregarHistorico(){
-
-let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
-
-let tabela=document.querySelector("#historico tbody")
-
-tabela.innerHTML=""
-
-banco.slice(-5).reverse().forEach(d=>{
-
-let tr=document.createElement("tr")
-
-tr.innerHTML=`
-<td>${d.data}</td>
-<td>${d.entrada}</td>
-<td>${d.saida}</td>
-`
-
-tabela.appendChild(tr)
-
-})
-
-}
-
-function gerarGrafico(){
-
-const canvas=document.getElementById("graficoHoras")
-
-let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
-
-if(banco.length==0) return
-
-const labels=banco.map(d=>d.data)
-
-const horas=banco.map(()=>8)
-
-new Chart(canvas,{
-
-type:"bar",
-
-data:{
-labels:labels,
-datasets:[{
-label:"Horas Trabalhadas",
-data:horas
-}]
-}
+setTimeout(arquivarDia,5000)
 
 })
 
 }
 
 function abrirPlanilha(){
+
 window.open(PLANILHA,"_blank")
+
 }
 
 function resetarDia(){
 
 dados={
+
 entrada:null,
 almocoSai:null,
 almocoVolta:null,
 saida:null
+
 }
 
 document.getElementById("entrada").innerText="--:--"
@@ -238,7 +198,20 @@ function abrirAjuste(){
 
 const painel=document.getElementById("painelAjuste")
 
-painel.style.display=painel.style.display==="none"?"block":"none"
+if(painel.style.display==="none" || painel.style.display===""){
+
+painel.style.display="block"
+
+document.getElementById("ajEntrada").value=dados.entrada||""
+document.getElementById("ajAlmocoSai").value=dados.almocoSai||""
+document.getElementById("ajAlmocoVolta").value=dados.almocoVolta||""
+document.getElementById("ajSaida").value=dados.saida||""
+
+}else{
+
+painel.style.display="none"
+
+}
 
 }
 
@@ -261,10 +234,6 @@ alert("Horário ajustado")
 window.addEventListener("load",()=>{
 
 obterGPS()
-
-carregarHistorico()
-
-gerarGrafico()
 
 })
 
