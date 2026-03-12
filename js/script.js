@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbyXERgpmH2Hmvm4nCiijsnECSDSfGfsTe-5wEMaqspI6YpcBeO0AWKTvMoLpx2YDG8/exec";
+const API = "https://script.google.com/macros/s/AKfycbwZRqxDOyHg03p2INx6PAQnGT5Bf4Y1x6EIQrE1N1mh2HFmebjqZsL9pwnCsDS2OW0/exec";
 
 // CORREÇÃO: URL da planilha com final /edit para garantir abertura correta
 const PLANILHA = "https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit";
@@ -106,4 +106,5 @@ function resetarDia() {
 function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
 window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
+
 
