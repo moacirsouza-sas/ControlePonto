@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbwgAcvCsG105US0Af65W8XF0suibrClXOZEHFkaafRsLX6zQL2j2T2LbH8AGE46JrY/exec"
+const API="https://script.google.com/macros/s/AKfycbyPRLEkiijyuuwC_s917FNjj15aGvDdIzGBw_hAYsJfJrOvZiUnnR60xNu0fQfnLRU/exec"
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit#gid=0"
 
@@ -357,5 +357,6 @@ gerarGrafico()
 }
 
 })
+
 
 
