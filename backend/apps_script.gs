@@ -1,5 +1,14 @@
 function doPost(e){
 
+try{
+
+if(!e || !e.postData){
+
+return ContentService
+.createTextOutput("Requisição inválida")
+
+}
+
 const SPREADSHEET_ID="1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE"
 
 const aba=SpreadsheetApp
@@ -38,5 +47,12 @@ new Date()
 
 return ContentService
 .createTextOutput("OK")
+
+}catch(err){
+
+return ContentService
+.createTextOutput("Erro: "+err)
+
+}
 
 }
