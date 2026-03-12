@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbyRAyYdpFB_VLhbCCPPccto5-5-ywbQRFRSVR1eaNB1II0vPCMyNK22iBqpwfJtdPo/exec"
+const API="https://script.google.com/macros/s/AKfycbya9YvdvxhYNqyHyxLHFoOFw8X1DCwAe4CJPOYg8IimoeU-JkRMG81W0qpeLtzbn44/exec"
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/SEU_ID"
 
@@ -236,6 +236,7 @@ window.addEventListener("load",()=>{
 obterGPS()
 
 })
+
 
 
 
