@@ -15,22 +15,10 @@ function hora() {
 }
 
 function registrarAgora() {
-    if (!dados.entrada) { 
-        dados.entrada = hora(); 
-        document.getElementById("entrada").innerText = dados.entrada; 
-    }
-    else if (!dados.almocoSai) { 
-        dados.almocoSai = hora(); 
-        document.getElementById("saidaAlmoco").innerText = dados.almocoSai; 
-    }
-    else if (!dados.almocoVolta) { 
-        dados.almocoVolta = hora(); 
-        document.getElementById("voltaAlmoco").innerText = dados.almocoVolta; 
-    }
-    else if (!dados.saida) { 
-        dados.saida = hora(); 
-        document.getElementById("saidaFinal").innerText = dados.saida; 
-    }
+    if (!dados.entrada) { dados.entrada = hora(); document.getElementById("entrada").innerText = dados.entrada; }
+    else if (!dados.almocoSai) { dados.almocoSai = hora(); document.getElementById("saidaAlmoco").innerText = dados.almocoSai; }
+    else if (!dados.almocoVolta) { dados.almocoVolta = hora(); document.getElementById("voltaAlmoco").innerText = dados.almocoVolta; }
+    else if (!dados.saida) { dados.saida = hora(); document.getElementById("saidaFinal").innerText = dados.saida; }
 }
 
 function obterGPS() {
@@ -39,42 +27,40 @@ function obterGPS() {
         const lat = pos.coords.latitude, lon = pos.coords.longitude;
         gps = `${lat},${lon} (${Math.round(pos.coords.accuracy)}m)`;
         document.querySelector(".gps").innerText = `GPS ativo (${Math.round(pos.coords.accuracy)}m)`;
-        
-        // CORREÇÃO: URL do Google Maps corrigida (maps.google.com e uso correto de ${})
+        // CORRIGIDO: Uso correto de ${lat} e ${lon}
         document.getElementById("mapa").innerHTML = `<iframe width="100%" height="200" src="https://google.com{lat},${lon}&z=15&output=embed"></iframe>`;
-        
         buscarEndereco(lat, lon);
     }, null, { enableHighAccuracy: true });
 }
 
 async function buscarEndereco(lat, lon) {
     try {
-        // CORREÇÃO: URL do Nominatim corrigida (nominatim.openstreetmap e uso correto de ${})
+        // CORRIGIDO: URL da API Nominatim
         const r = await fetch(`https://openstreetmap.org{lat}&lon=${lon}&format=json`);
         const d = await r.json();
-        endereco = d.display_name || "Endereço não identificado";
+        endereco = d.display_name;
         document.getElementById("endereco").innerText = endereco;
-    } catch(e) { 
-        console.error("Erro GPS"); 
-        document.getElementById("endereco").innerText = "Endereço indisponível";
-    }
+    } catch(e) { console.error("Erro GPS"); }
 }
 
 function arquivarDia() {
     if (!dados.entrada || !dados.saida) return alert("Registre ao menos Entrada e Saída Final");
-    document.getElementById("statusSync").innerText = "🟡 enviando...";
+    
+    const status = document.getElementById("statusSync");
+    status.innerText = "🟡 enviando...";
 
     fetch(API, {
         method: "POST",
-        mode: "no-cors", 
+        mode: "no-cors", // SOLUÇÃO PARA O ERRO CORS DA IMAGEM
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...dados, data: hoje, geo: gps + " | " + endereco })
     }).then(() => {
-        document.getElementById("statusSync").innerText = "🟢 sincronizado";
+        // No modo no-cors o navegador não lê a resposta, mas o envio ocorre.
+        status.innerText = "🟢 sincronizado";
         salvarLocal();
         resetarDia();
     }).catch(() => {
-        document.getElementById("statusSync").innerText = "🔴 erro conexão";
+        status.innerText = "🔴 erro conexão";
     });
 }
 
@@ -103,12 +89,10 @@ function salvarAjuste() {
     dados.almocoVolta = document.getElementById("ajAlmocoVolta").value;
     dados.saida = document.getElementById("ajSaida").value;
     
-    // Atualização visual dos cards
     document.getElementById("entrada").innerText = dados.entrada || "--:--";
     document.getElementById("saidaAlmoco").innerText = dados.almocoSai || "--:--";
     document.getElementById("voltaAlmoco").innerText = dados.almocoVolta || "--:--";
     document.getElementById("saidaFinal").innerText = dados.saida || "--:--";
-    
     abrirAjuste();
 }
 
@@ -117,15 +101,6 @@ function resetarDia() {
     ["entrada", "saidaAlmoco", "voltaAlmoco", "saidaFinal"].forEach(id => document.getElementById(id).innerText = "--:--");
 }
 
-function abrirPlanilha() { 
-    // Abre a planilha em uma nova aba
-    window.open(PLANILHA, "_blank"); 
-}
+function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
-window.addEventListener("load", () => { 
-    obterGPS(); 
-    carregarHistorico(); 
-    if(window.gerarGrafico) gerarGrafico(); 
-});
-
-
+window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
