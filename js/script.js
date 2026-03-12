@@ -5,8 +5,8 @@ const PLANILHA="https://docs.google.com/spreadsheets/d/SEU_ID"
 let hoje = new Date().toLocaleDateString("pt-BR");
 document.getElementById("dataHoje").innerText = hoje;
 
-let gps = "Não capturado";
-let endereco = "Endereço não identificado";
+let gps = "";
+let endereco = "";
 let dados = { entrada: null, almocoSai: null, almocoVolta: null, saida: null };
 
 function hora() {
@@ -23,43 +23,38 @@ function registrarAgora() {
 function obterGPS() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(pos => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
         gps = `${lat},${lon} (${Math.round(pos.coords.accuracy)}m)`;
         document.querySelector(".gps").innerText = `GPS ativo (${Math.round(pos.coords.accuracy)}m)`;
-        document.getElementById("mapa").innerHTML = `<iframe width="100%" height="150" src="https://google.com{lat},${lon}&z=15&output=embed"></iframe>`;
+        document.getElementById("mapa").innerHTML = `<iframe width="100%" height="200" src="https://google.com{lat},${lon}&z=15&output=embed"></iframe>`;
         buscarEndereco(lat, lon);
-    }, () => { document.querySelector(".gps").innerText = "GPS Bloqueado"; }, { enableHighAccuracy: true });
+    }, null, { enableHighAccuracy: true });
 }
 
 async function buscarEndereco(lat, lon) {
     try {
         const r = await fetch(`https://openstreetmap.org{lat}&lon=${lon}&format=json`);
         const d = await r.json();
-        endereco = d.display_name || "Endereço não encontrado";
+        endereco = d.display_name;
         document.getElementById("endereco").innerText = endereco;
-    } catch (e) { console.error("Erro Nominatim"); }
+    } catch(e) { console.error("Erro GPS"); }
 }
 
 function arquivarDia() {
-    if (!dados.entrada || !dados.saida) return alert("Preencha ao menos Entrada e Saída Final");
-    
-    const status = document.getElementById("statusSync");
-    status.innerText = "🟡 enviando...";
+    if (!dados.entrada || !dados.saida) return alert("Registre ao menos Entrada e Saída Final");
+    document.getElementById("statusSync").innerText = "🟡 enviando...";
 
     fetch(API, {
         method: "POST",
-        mode: "no-cors",
+        mode: "no-cors", // Resolve erro da Imagem 1
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...dados, data: hoje, geo: `${gps} | ${endereco}` })
-    })
-    .then(() => {
-        status.innerText = "🟢 sincronizado";
+        body: JSON.stringify({ ...dados, data: hoje, geo: gps + " | " + endereco })
+    }).then(() => {
+        document.getElementById("statusSync").innerText = "🟢 sincronizado";
         salvarLocal();
         resetarDia();
-    })
-    .catch(() => {
-        status.innerText = "🔴 erro de conexão";
+    }).catch(() => {
+        document.getElementById("statusSync").innerText = "🔴 erro conexão";
     });
 }
 
@@ -72,15 +67,14 @@ function salvarLocal() {
 }
 
 function carregarHistorico() {
-    const banco = JSON.parse(localStorage.getItem("ponto_db") || "[]");
+    let banco = JSON.parse(localStorage.getItem("ponto_db") || "[]");
     document.querySelector("#historico tbody").innerHTML = banco.slice(-5).reverse().map(d => 
-        `<tr><td>${d.data}</td><td>${d.entrada}</td><td>${d.saida || '--:--'}</td></tr>`
-    ).join('');
+        `<tr><td>${d.data}</td><td>${d.entrada}</td><td>${d.saida || '--:--'}</td></tr>`).join('');
 }
 
 function abrirAjuste() {
     const p = document.getElementById("painelAjuste");
-    p.style.display = (p.style.display === "none") ? "block" : "none";
+    p.style.display = (p.style.display === "none" || p.style.display === "") ? "block" : "none";
 }
 
 function salvarAjuste() {
@@ -88,11 +82,9 @@ function salvarAjuste() {
     dados.almocoSai = document.getElementById("ajAlmocoSai").value;
     dados.almocoVolta = document.getElementById("ajAlmocoVolta").value;
     dados.saida = document.getElementById("ajSaida").value;
-    
-    document.getElementById("entrada").innerText = dados.entrada || "--:--";
-    document.getElementById("saidaAlmoco").innerText = dados.almocoSai || "--:--";
-    document.getElementById("voltaAlmoco").innerText = dados.almocoVolta || "--:--";
-    document.getElementById("saidaFinal").innerText = dados.saida || "--:--";
+    ["entrada", "saidaAlmoco", "voltaAlmoco", "saidaFinal"].forEach((id, i) => {
+        document.getElementById(id).innerText = Object.values(dados)[i] || "--:--";
+    });
     abrirAjuste();
 }
 
