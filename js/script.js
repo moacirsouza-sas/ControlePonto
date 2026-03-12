@@ -27,8 +27,10 @@ function obterGPS() {
         const lat = pos.coords.latitude, lon = pos.coords.longitude;
         gps = `${lat},${lon} (${Math.round(pos.coords.accuracy)}m)`;
         document.querySelector(".gps").innerText = `GPS ativo (${Math.round(pos.coords.accuracy)}m)`;
+        
         // CORRIGIDO: Uso correto de ${lat} e ${lon}
         document.getElementById("mapa").innerHTML = `<iframe width="100%" height="200" src="https://google.com{lat},${lon}&z=15&output=embed"></iframe>`;
+        
         buscarEndereco(lat, lon);
     }, null, { enableHighAccuracy: true });
 }
@@ -104,3 +106,4 @@ function resetarDia() {
 function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
 window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
+
