@@ -10,7 +10,7 @@
 
 <link rel="stylesheet" href="css/style.css">
 
-<link rel="icon" href="data:,">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -54,11 +54,13 @@
 
 <span id="cronometro">00:00:00</span>
 
-<p class="gps">GPS obrigatório</p>
+<p class="gps">GPS aguardando...</p>
 
-<p id="statusSync">🟢 pronto</p>
+<p id="endereco"></p>
 
 </div>
+
+<div id="mapa"></div>
 
 <button class="btn-arquivar" onclick="arquivarDia()">
 Arquivar Registro do Dia
@@ -67,6 +69,17 @@ Arquivar Registro do Dia
 <button class="btn-ajuste" onclick="abrirAjuste()">
 ✏ Ajustar Horário
 </button>
+
+<div id="painelAjuste" style="display:none">
+
+<input type="time" id="ajEntrada">
+<input type="time" id="ajAlmocoSai">
+<input type="time" id="ajAlmocoVolta">
+<input type="time" id="ajSaida">
+
+<button onclick="salvarAjuste()">Salvar Ajuste</button>
+
+</div>
 
 <div class="acoes">
 
@@ -106,13 +119,9 @@ Arquivar Registro do Dia
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script src="js/script.js"></script>
-<script src="js/charts.js"></script>
 
 </body>
 </html>
-
 
 
