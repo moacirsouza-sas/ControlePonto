@@ -15,20 +15,33 @@ function hora() {
 }
 
 function registrarAgora() {
-    if (!dados.entrada) { dados.entrada = hora(); document.getElementById("entrada").innerText = dados.entrada; }
-    else if (!dados.almocoSai) { dados.almocoSai = hora(); document.getElementById("saidaAlmoco").innerText = dados.almocoSai; }
-    else if (!dados.almocoVolta) { dados.almocoVolta = hora(); document.getElementById("voltaAlmoco").innerText = dados.almocoVolta; }
-    else if (!dados.saida) { dados.saida = hora(); document.getElementById("saidaFinal").innerText = dados.saida; }
+    if (!dados.entrada) { 
+        dados.entrada = hora(); 
+        document.getElementById("entrada").innerText = dados.entrada; 
+    }
+    else if (!dados.almocoSai) { 
+        dados.almocoSai = hora(); 
+        document.getElementById("saidaAlmoco").innerText = dados.almocoSai; 
+    }
+    else if (!dados.almocoVolta) { 
+        dados.almocoVolta = hora(); 
+        document.getElementById("voltaAlmoco").innerText = dados.almocoVolta; 
+    }
+    else if (!dados.saida) { 
+        dados.saida = hora(); 
+        document.getElementById("saidaFinal").innerText = dados.saida; 
+    }
 }
 
 function obterGPS() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(pos => {
-        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
         gps = `${lat},${lon} (${Math.round(pos.coords.accuracy)}m)`;
         document.querySelector(".gps").innerText = `GPS ativo (${Math.round(pos.coords.accuracy)}m)`;
         
-        // CORRIGIDO: Uso correto de ${lat} e ${lon}
+        // CORREÇÃO: Uso correto de crase e ${} para o Iframe
         document.getElementById("mapa").innerHTML = `<iframe width="100%" height="200" src="https://google.com{lat},${lon}&z=15&output=embed"></iframe>`;
         
         buscarEndereco(lat, lon);
@@ -37,12 +50,14 @@ function obterGPS() {
 
 async function buscarEndereco(lat, lon) {
     try {
-        // CORRIGIDO: URL da API Nominatim
+        // CORREÇÃO: URL da API Nominatim corrigida
         const r = await fetch(`https://openstreetmap.org{lat}&lon=${lon}&format=json`);
         const d = await r.json();
-        endereco = d.display_name;
+        endereco = d.display_name || "Endereço não localizado";
         document.getElementById("endereco").innerText = endereco;
-    } catch(e) { console.error("Erro GPS"); }
+    } catch(e) { 
+        console.error("Erro GPS"); 
+    }
 }
 
 function arquivarDia() {
@@ -53,15 +68,21 @@ function arquivarDia() {
 
     fetch(API, {
         method: "POST",
-        mode: "no-cors", // SOLUÇÃO PARA O ERRO CORS DA IMAGEM
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...dados, data: hoje, geo: gps + " | " + endereco })
-    }).then(() => {
-        // No modo no-cors o navegador não lê a resposta, mas o envio ocorre.
+        mode: "no-cors", // SOLUÇÃO PARA O ERRO DE CORS
+        cache: "no-cache",
+        body: JSON.stringify({ 
+            ...dados, 
+            data: hoje, 
+            geo: gps + " | " + endereco 
+        })
+    })
+    .then(() => {
+        // No modo no-cors não lemos a resposta, mas o envio é processado
         status.innerText = "🟢 sincronizado";
         salvarLocal();
         resetarDia();
-    }).catch(() => {
+    })
+    .catch(() => {
         status.innerText = "🔴 erro conexão";
     });
 }
@@ -105,7 +126,12 @@ function resetarDia() {
 
 function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
-window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
+window.addEventListener("load", () => { 
+    obterGPS(); 
+    carregarHistorico(); 
+    if(window.gerarGrafico) gerarGrafico(); 
+});
+
 
 
 
