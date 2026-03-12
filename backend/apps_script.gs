@@ -1,20 +1,4 @@
-function doGet(){
-
-return ContentService
-.createTextOutput("API Ponto Pro funcionando")
-.setMimeType(ContentService.MimeType.TEXT)
-
-}
-
 function doPost(e){
-
-if(!e || !e.postData){
-
-return ContentService
-.createTextOutput("Requisição inválida")
-.setMimeType(ContentService.MimeType.TEXT)
-
-}
 
 const SPREADSHEET_ID="1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE"
 
@@ -54,6 +38,5 @@ new Date()
 
 return ContentService
 .createTextOutput("OK")
-.setMimeType(ContentService.MimeType.TEXT)
 
 }
