@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbya9YvdvxhYNqyHyxLHFoOFw8X1DCwAe4CJPOYg8IimoeU-JkRMG81W0qpeLtzbn44/exec"
+const API="https://script.google.com/macros/s/AKfycbyXERgpmH2Hmvm4nCiijsnECSDSfGfsTe-5wEMaqspI6YpcBeO0AWKTvMoLpx2YDG8/exec"
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/SEU_ID"
 
@@ -104,6 +104,7 @@ function resetarDia() {
 function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
 window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
+
 
 
 
