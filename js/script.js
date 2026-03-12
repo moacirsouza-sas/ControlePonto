@@ -97,10 +97,3 @@ function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
 window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
 
-
-
-
-
-
-
-
