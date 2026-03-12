@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbxbsCbjXT9HFMVsVYNR4NGI2fx1if-fIeEhcIZByvT6ZVg9w2JfmsBZm8IeHXTTzM0/exec";
+const API = "https://script.google.com/macros/s/AKfycbzYsquPmRPAjwKuxfEds-HxpxHtlX2BepMddGKtaVqhiHrKXHBmSYkmcE_5aQZa3uQ/exec";
 
 // CORREÇÃO: URL da planilha com final /edit para garantir abertura correta
 const PLANILHA = "https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit";
@@ -131,6 +131,7 @@ window.addEventListener("load", () => {
     carregarHistorico(); 
     if(window.gerarGrafico) gerarGrafico(); 
 });
+
 
 
 
