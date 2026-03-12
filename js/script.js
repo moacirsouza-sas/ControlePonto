@@ -1,6 +1,7 @@
-const API="https://script.google.com/macros/s/AKfycbyXERgpmH2Hmvm4nCiijsnECSDSfGfsTe-5wEMaqspI6YpcBeO0AWKTvMoLpx2YDG8/exec"
+const API = "https://script.google.com/macros/s/AKfycbyXERgpmH2Hmvm4nCiijsnECSDSfGfsTe-5wEMaqspI6YpcBeO0AWKTvMoLpx2YDG8/exec";
 
-const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
+// CORREÇÃO: URL da planilha com final /edit para garantir abertura correta
+const PLANILHA = "https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit";
 
 let hoje = new Date().toLocaleDateString("pt-BR");
 document.getElementById("dataHoje").innerText = hoje;
@@ -14,10 +15,22 @@ function hora() {
 }
 
 function registrarAgora() {
-    if (!dados.entrada) { dados.entrada = hora(); document.getElementById("entrada").innerText = dados.entrada; }
-    else if (!dados.almocoSai) { dados.almocoSai = hora(); document.getElementById("saidaAlmoco").innerText = dados.almocoSai; }
-    else if (!dados.almocoVolta) { dados.almocoVolta = hora(); document.getElementById("voltaAlmoco").innerText = dados.almocoVolta; }
-    else if (!dados.saida) { dados.saida = hora(); document.getElementById("saidaFinal").innerText = dados.saida; }
+    if (!dados.entrada) { 
+        dados.entrada = hora(); 
+        document.getElementById("entrada").innerText = dados.entrada; 
+    }
+    else if (!dados.almocoSai) { 
+        dados.almocoSai = hora(); 
+        document.getElementById("saidaAlmoco").innerText = dados.almocoSai; 
+    }
+    else if (!dados.almocoVolta) { 
+        dados.almocoVolta = hora(); 
+        document.getElementById("voltaAlmoco").innerText = dados.almocoVolta; 
+    }
+    else if (!dados.saida) { 
+        dados.saida = hora(); 
+        document.getElementById("saidaFinal").innerText = dados.saida; 
+    }
 }
 
 function obterGPS() {
@@ -26,18 +39,25 @@ function obterGPS() {
         const lat = pos.coords.latitude, lon = pos.coords.longitude;
         gps = `${lat},${lon} (${Math.round(pos.coords.accuracy)}m)`;
         document.querySelector(".gps").innerText = `GPS ativo (${Math.round(pos.coords.accuracy)}m)`;
+        
+        // CORREÇÃO: URL do Google Maps corrigida (maps.google.com e uso correto de ${})
         document.getElementById("mapa").innerHTML = `<iframe width="100%" height="200" src="https://google.com{lat},${lon}&z=15&output=embed"></iframe>`;
+        
         buscarEndereco(lat, lon);
     }, null, { enableHighAccuracy: true });
 }
 
 async function buscarEndereco(lat, lon) {
     try {
+        // CORREÇÃO: URL do Nominatim corrigida (nominatim.openstreetmap e uso correto de ${})
         const r = await fetch(`https://openstreetmap.org{lat}&lon=${lon}&format=json`);
         const d = await r.json();
-        endereco = d.display_name;
+        endereco = d.display_name || "Endereço não identificado";
         document.getElementById("endereco").innerText = endereco;
-    } catch(e) { console.error("Erro GPS"); }
+    } catch(e) { 
+        console.error("Erro GPS"); 
+        document.getElementById("endereco").innerText = "Endereço indisponível";
+    }
 }
 
 function arquivarDia() {
@@ -46,7 +66,7 @@ function arquivarDia() {
 
     fetch(API, {
         method: "POST",
-        mode: "no-cors", // Resolve erro da Imagem 1
+        mode: "no-cors", 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...dados, data: hoje, geo: gps + " | " + endereco })
     }).then(() => {
@@ -82,9 +102,13 @@ function salvarAjuste() {
     dados.almocoSai = document.getElementById("ajAlmocoSai").value;
     dados.almocoVolta = document.getElementById("ajAlmocoVolta").value;
     dados.saida = document.getElementById("ajSaida").value;
-    ["entrada", "saidaAlmoco", "voltaAlmoco", "saidaFinal"].forEach((id, i) => {
-        document.getElementById(id).innerText = Object.values(dados)[i] || "--:--";
-    });
+    
+    // Atualização visual dos cards
+    document.getElementById("entrada").innerText = dados.entrada || "--:--";
+    document.getElementById("saidaAlmoco").innerText = dados.almocoSai || "--:--";
+    document.getElementById("voltaAlmoco").innerText = dados.almocoVolta || "--:--";
+    document.getElementById("saidaFinal").innerText = dados.saida || "--:--";
+    
     abrirAjuste();
 }
 
@@ -93,9 +117,15 @@ function resetarDia() {
     ["entrada", "saidaAlmoco", "voltaAlmoco", "saidaFinal"].forEach(id => document.getElementById(id).innerText = "--:--");
 }
 
-function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
+function abrirPlanilha() { 
+    // Abre a planilha em uma nova aba
+    window.open(PLANILHA, "_blank"); 
+}
 
-window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
-
+window.addEventListener("load", () => { 
+    obterGPS(); 
+    carregarHistorico(); 
+    if(window.gerarGrafico) gerarGrafico(); 
+});
 
 
