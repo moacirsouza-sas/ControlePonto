@@ -1,10 +1,13 @@
 const API="https://script.google.com/macros/s/AKfycbyPRLEkiijyuuwC_s917FNjj15aGvDdIzGBw_hAYsJfJrOvZiUnnR60xNu0fQfnLRU/exec"
 
-const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit#gid=0"
+const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
 
 let hoje=new Date().toLocaleDateString("pt-BR")
 
 document.getElementById("dataHoje").innerText=hoje
+
+let gps=""
+let endereco=""
 
 let dados={
 entrada:null,
@@ -13,17 +16,31 @@ almocoVolta:null,
 saida:null
 }
 
-let gps="indisponivel"
-
 function hora(){
 return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
 }
 
-function status(msg){
+function registrarAgora(){
 
-let el=document.getElementById("statusSync")
+if(!dados.entrada){
+dados.entrada=hora()
+document.getElementById("entrada").innerText=dados.entrada
+}
 
-if(el) el.innerText=msg
+else if(!dados.almocoSai){
+dados.almocoSai=hora()
+document.getElementById("saidaAlmoco").innerText=dados.almocoSai
+}
+
+else if(!dados.almocoVolta){
+dados.almocoVolta=hora()
+document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
+}
+
+else if(!dados.saida){
+dados.saida=hora()
+document.getElementById("saidaFinal").innerText=dados.saida
+}
 
 }
 
@@ -31,213 +48,117 @@ function obterGPS(){
 
 if(!navigator.geolocation){
 
-gps="gps indisponivel"
-
+document.querySelector(".gps").innerText="GPS não suportado"
 return
 
 }
 
 navigator.geolocation.getCurrentPosition(
 
-pos=>{
+function(pos){
 
-gps=pos.coords.latitude+","+pos.coords.longitude
+const lat=pos.coords.latitude
+const lon=pos.coords.longitude
+const precisao=Math.round(pos.coords.accuracy)
+
+gps=lat+","+lon+" ("+precisao+"m)"
+
+document.querySelector(".gps").innerText="GPS ativo ("+precisao+"m)"
+
+mostrarMapa(lat,lon)
+
+buscarEndereco(lat,lon)
 
 },
 
-()=>{
+function(){
 
-gps="gps bloqueado"
+document.querySelector(".gps").innerText="GPS bloqueado"
 
-}
+},
+
+{enableHighAccuracy:true}
 
 )
 
 }
 
-obterGPS()
+function mostrarMapa(lat,lon){
 
-function registrarAgora(){
+document.getElementById("mapa").innerHTML=
 
-if(!dados.entrada){
-
-dados.entrada=hora()
-
-document.getElementById("entrada").innerText=dados.entrada
+`<iframe width="100%" height="200" src="https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed"></iframe>`
 
 }
 
-else if(!dados.almocoSai){
+async function buscarEndereco(lat,lon){
 
-dados.almocoSai=hora()
+const url=`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
 
-document.getElementById("saidaAlmoco").innerText=dados.almocoSai
+const r=await fetch(url)
 
-}
+const d=await r.json()
 
-else if(!dados.almocoVolta){
+endereco=d.display_name
 
-dados.almocoVolta=hora()
-
-document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
+document.getElementById("endereco").innerText=endereco
 
 }
 
-else if(!dados.saida){
+function arquivarDia(){
 
-dados.saida=hora()
+fetch(API,{
 
-document.getElementById("saidaFinal").innerText=dados.saida
-
-}
-
-else{
-
-alert("Todos registros já feitos.")
-
-}
-
-}
-
-function enviarRegistro(payload){
-
-return fetch(API,{
 method:"POST",
-body:JSON.stringify(payload)
-})
-.then(r=>r.text())
 
-}
-
-async function arquivarDia(){
-
-if(!dados.entrada || !dados.saida){
-
-alert("Registro incompleto.")
-
-return
-
-}
-
-let payload={
+body:JSON.stringify({
 
 data:hoje,
 entrada:dados.entrada,
 almocoSai:dados.almocoSai,
 almocoVolta:dados.almocoVolta,
 saida:dados.saida,
-saldo:0,
-geo:gps
+geo:gps+" | "+endereco
 
-}
+})
 
-if(!navigator.onLine){
+})
+.then(()=>{
 
-status("📡 offline - salvo local")
+alert("Registro enviado")
 
-salvarLocal(payload,true)
-
-return
-
-}
-
-status("⏳ sincronizando")
-
-try{
-
-await enviarRegistro(payload)
-
-status("✅ sincronizado")
-
-salvarLocal(payload,false)
+salvarLocal()
 
 resetarDia()
 
-}catch{
+})
+.catch(()=>{
 
-status("⚠ erro - aguardando internet")
+alert("Erro ao enviar")
 
-salvarLocal(payload,true)
+})
 
 }
 
-}
-
-function salvarLocal(payload,pending){
+function salvarLocal(){
 
 let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
 
-payload.pending=pending
+banco.push({
 
-banco.push(payload)
+data:hoje,
+entrada:dados.entrada,
+almocoSai:dados.almocoSai,
+almocoVolta:dados.almocoVolta,
+saida:dados.saida
+
+})
 
 localStorage.setItem("ponto_db",JSON.stringify(banco))
 
 carregarHistorico()
 
-if(typeof gerarGrafico==="function"){
-
 gerarGrafico()
-
-}
-
-}
-
-async function reenviarPendentes(){
-
-let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
-
-for(let r of banco){
-
-if(r.pending){
-
-try{
-
-await enviarRegistro(r)
-
-r.pending=false
-
-}catch{}
-
-}
-
-}
-
-localStorage.setItem("ponto_db",JSON.stringify(banco))
-
-}
-
-setInterval(()=>{
-
-if(navigator.onLine){
-
-reenviarPendentes()
-
-}
-
-},15000)
-
-function resetarDia(){
-
-dados={
-
-entrada:null,
-almocoSai:null,
-almocoVolta:null,
-saida:null
-
-}
-
-document.getElementById("entrada").innerText="--:--"
-document.getElementById("saidaAlmoco").innerText="--:--"
-document.getElementById("voltaAlmoco").innerText="--:--"
-document.getElementById("saidaFinal").innerText="--:--"
-
-}
-
-function abrirPlanilha(){
-
-window.open(PLANILHA,"_blank")
 
 }
 
@@ -254,11 +175,9 @@ banco.slice(-5).reverse().forEach(d=>{
 let tr=document.createElement("tr")
 
 tr.innerHTML=`
-
 <td>${d.data}</td>
 <td>${d.entrada}</td>
 <td>${d.saida}</td>
-
 `
 
 tabela.appendChild(tr)
@@ -267,96 +186,88 @@ tabela.appendChild(tr)
 
 }
 
-function baixarCSV(){
+function gerarGrafico(){
+
+const canvas=document.getElementById("graficoHoras")
 
 let banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
 
-if(banco.length===0){
+if(banco.length==0) return
 
-alert("Sem dados")
+const labels=banco.map(d=>d.data)
 
-return
+const horas=banco.map(()=>8)
 
+new Chart(canvas,{
+
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Horas Trabalhadas",
+data:horas
+}]
 }
-
-let csv="Data,Entrada,SaidaAlmoco,VoltaAlmoco,Saida\n"
-
-banco.forEach(d=>{
-
-csv+=`${d.data},${d.entrada},${d.almocoSai||""},${d.almocoVolta||""},${d.saida}\n`
 
 })
 
-let blob=new Blob([csv],{type:"text/csv"})
+}
 
-let url=URL.createObjectURL(blob)
+function abrirPlanilha(){
+window.open(PLANILHA,"_blank")
+}
 
-let a=document.createElement("a")
+function resetarDia(){
 
-a.href=url
-a.download="ponto.csv"
+dados={
+entrada:null,
+almocoSai:null,
+almocoVolta:null,
+saida:null
+}
 
-a.click()
+document.getElementById("entrada").innerText="--:--"
+document.getElementById("saidaAlmoco").innerText="--:--"
+document.getElementById("voltaAlmoco").innerText="--:--"
+document.getElementById("saidaFinal").innerText="--:--"
 
 }
 
 function abrirAjuste(){
 
-let entrada=prompt("Entrada:",dados.entrada||"")
+const painel=document.getElementById("painelAjuste")
 
-if(entrada){
-
-dados.entrada=entrada
-
-document.getElementById("entrada").innerText=entrada
+painel.style.display=painel.style.display==="none"?"block":"none"
 
 }
 
-let almocoSai=prompt("Saída almoço:",dados.almocoSai||"")
+function salvarAjuste(){
 
-if(almocoSai){
+dados.entrada=document.getElementById("ajEntrada").value
+dados.almocoSai=document.getElementById("ajAlmocoSai").value
+dados.almocoVolta=document.getElementById("ajAlmocoVolta").value
+dados.saida=document.getElementById("ajSaida").value
 
-dados.almocoSai=almocoSai
+document.getElementById("entrada").innerText=dados.entrada
+document.getElementById("saidaAlmoco").innerText=dados.almocoSai
+document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
+document.getElementById("saidaFinal").innerText=dados.saida
 
-document.getElementById("saidaAlmoco").innerText=almocoSai
-
-}
-
-let almocoVolta=prompt("Volta almoço:",dados.almocoVolta||"")
-
-if(almocoVolta){
-
-dados.almocoVolta=almocoVolta
-
-document.getElementById("voltaAlmoco").innerText=almocoVolta
-
-}
-
-let saida=prompt("Saída final:",dados.saida||"")
-
-if(saida){
-
-dados.saida=saida
-
-document.getElementById("saidaFinal").innerText=saida
-
-}
-
-alert("Horários ajustados")
+alert("Horário ajustado")
 
 }
 
 window.addEventListener("load",()=>{
 
-carregarHistorico()
+obterGPS()
 
-if(typeof gerarGrafico==="function"){
+carregarHistorico()
 
 gerarGrafico()
 
-}
-
 })
+
 
 
 
