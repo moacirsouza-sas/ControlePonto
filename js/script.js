@@ -1,6 +1,6 @@
 const API="https://script.google.com/macros/s/AKfycbyXERgpmH2Hmvm4nCiijsnECSDSfGfsTe-5wEMaqspI6YpcBeO0AWKTvMoLpx2YDG8/exec"
 
-const PLANILHA="https://docs.google.com/spreadsheets/d/SEU_ID"
+const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE"
 
 let hoje = new Date().toLocaleDateString("pt-BR");
 document.getElementById("dataHoje").innerText = hoje;
@@ -96,4 +96,5 @@ function resetarDia() {
 function abrirPlanilha() { window.open(PLANILHA, "_blank"); }
 
 window.addEventListener("load", () => { obterGPS(); carregarHistorico(); if(window.gerarGrafico) gerarGrafico(); });
+
 
