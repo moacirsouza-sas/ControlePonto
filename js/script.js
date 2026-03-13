@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbzYsquPmRPAjwKuxfEds-HxpxHtlX2BepMddGKtaVqhiHrKXHBmSYkmcE_5aQZa3uQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbxptl7OigMrmAW9HOrHcuGdyy1sK7AA6I1M25nwWBKSnUWZ9qI9cnolWpeSw0kHxb4/exec";
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE"
 
@@ -226,6 +226,7 @@ obterGPS()
 carregarHistorico()
 
 })
+
 
 
 
