@@ -1,383 +1,278 @@
-const API = "https://script.google.com/macros/s/AKfycbwOC9FMcoRFB0WkE8C8NjQq08g3NHEa7Prwf3bjAKzb8aNO8nM0EQjPgn_H28TxWw/exec";
-const PLANILHA = "https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit";
+const API="https://script.google.com/macros/s/AKfycbyRAyYdpFB_VLhbCCPPccto5-5-ywbQRFRSVR1eaNB1II0vPCMyNK22iBqpwfJtdPo/exec"
 
-const JORNADA_MINUTOS = 540;
-const STORAGE_KEY = "ponto_db";
+const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
+const JORNADA_MINUTOS=540
 
-const hoje = new Date().toLocaleDateString("pt-BR");
+let hoje=new Date().toLocaleDateString("pt-BR")
 
-document.getElementById("dataHoje").innerText = hoje;
+document.getElementById("dataHoje").innerText=hoje
 
-let gps = "";
-let endereco = "";
+let gps=""
+let endereco=""
 
-let dados = {
-  entrada: null,
-  almocoSai: null,
-  almocoVolta: null,
-  saida: null,
-};
-
-function hora() {
-  return new Date().toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+let dados={
+entrada:null,
+almocoSai:null,
+almocoVolta:null,
+saida:null
 }
 
-function horaParaMinutos(valor) {
-  if (!valor || typeof valor !== "string") return null;
-
-  const [h, m] = valor.split(":").map(Number);
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-
-  return h * 60 + m;
+function hora(){
+return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
 }
 
-function calcularMinutosTrabalhados(registro = dados) {
-  const entrada = horaParaMinutos(registro.entrada);
-  const almocoSai = horaParaMinutos(registro.almocoSai);
-  const almocoVolta = horaParaMinutos(registro.almocoVolta);
-  const saida = horaParaMinutos(registro.saida);
+function horaParaMinutos(valor){
+if(!valor) return null
 
-  if ([entrada, almocoSai, almocoVolta, saida].some((valor) => valor === null)) {
-    return null;
-  }
+const [h,m]=valor.split(":").map(Number)
+if(Number.isNaN(h) || Number.isNaN(m)) return null
 
-  if (almocoSai < entrada || almocoVolta < almocoSai || saida < almocoVolta) {
-    return null;
-  }
-
-  const manha = almocoSai - entrada;
-  const tarde = saida - almocoVolta;
-
-  return manha + tarde;
+return h*60+m
 }
 
-function registrarAgora() {
-  if (!dados.entrada) {
-    dados.entrada = hora();
-    document.getElementById("entrada").innerText = dados.entrada;
-    return;
-  }
+function calcularMinutosTrabalhados(registro=dados){
+const entrada=horaParaMinutos(registro.entrada)
+const almocoSai=horaParaMinutos(registro.almocoSai)
+const almocoVolta=horaParaMinutos(registro.almocoVolta)
+const saida=horaParaMinutos(registro.saida)
 
-  if (!dados.almocoSai) {
-    dados.almocoSai = hora();
-    document.getElementById("saidaAlmoco").innerText = dados.almocoSai;
-    return;
-  }
+if([entrada,almocoSai,almocoVolta,saida].some(v=>v===null)) return null
 
-  if (!dados.almocoVolta) {
-    dados.almocoVolta = hora();
-    document.getElementById("voltaAlmoco").innerText = dados.almocoVolta;
-    return;
-  }
+const manha=almocoSai-entrada
+const tarde=saida-almocoVolta
 
-  if (!dados.saida) {
-    dados.saida = hora();
-    document.getElementById("saidaFinal").innerText = dados.saida;
-    return;
-  }
+if(manha<0 || tarde<0) return null
 
-  alert("Todos os pontos do dia já foram registrados.");
+return manha+tarde
 }
 
-function obterGPS() {
-  if (!navigator.geolocation) {
-    document.querySelector(".gps").innerText = "GPS não suportado";
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    function sucesso(pos) {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      const precisao = Math.round(pos.coords.accuracy);
-
-      gps = `${lat},${lon} (${precisao}m)`;
-      document.querySelector(".gps").innerText = `GPS ativo (${precisao}m)`;
-
-      mostrarMapa(lat, lon);
-      buscarEndereco(lat, lon);
-    },
-    function erro() {
-      document.querySelector(".gps").innerText = "GPS bloqueado";
-    },
-    { enableHighAccuracy: true }
-  );
+function registrarAgora(){
+if(!dados.entrada){
+dados.entrada=hora()
+document.getElementById("entrada").innerText=dados.entrada
+}
+else if(!dados.almocoSai){
+dados.almocoSai=hora()
+document.getElementById("saidaAlmoco").innerText=dados.almocoSai
+}
+else if(!dados.almocoVolta){
+dados.almocoVolta=hora()
+document.getElementById("voltaAlmoco").innerText=dados.almocoVolta
+}
+else if(!dados.saida){
+dados.saida=hora()
+document.getElementById("saidaFinal").innerText=dados.saida
+}
 }
 
-function mostrarMapa(lat, lon) {
-  document.getElementById("mapa").innerHTML = `
-    <iframe
-      width="100%"
-      height="200"
-      src="https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed"
-    ></iframe>
-  `;
+function obterGPS(){
+if(!navigator.geolocation){
+document.querySelector(".gps").innerText="GPS não suportado"
+return
 }
 
-async function buscarEndereco(lat, lon) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
-    const resposta = await fetch(url);
-    if (!resposta.ok) return;
+navigator.geolocation.getCurrentPosition(
+function(pos){
+const lat=pos.coords.latitude
+const lon=pos.coords.longitude
+const precisao=Math.round(pos.coords.accuracy)
 
-    const payload = await resposta.json();
-    endereco = payload.display_name || "";
+gps=lat+","+lon+" ("+precisao+"m)"
+document.querySelector(".gps").innerText="GPS ativo ("+precisao+"m)"
 
-    document.getElementById("endereco").innerText = endereco;
-  } catch (_) {
-    // endereço é opcional, segue sem bloquear o fluxo principal
-  }
+mostrarMapa(lat,lon)
+buscarEndereco(lat,lon)
+},
+function(){
+document.querySelector(".gps").innerText="GPS bloqueado"
+},
+{enableHighAccuracy:true}
+)
 }
 
-function lerBanco() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+function mostrarMapa(lat,lon){
+document.getElementById("mapa").innerHTML=
+`<iframe width="100%" height="200" src="https://maps.google.com/maps?q=${lat},${lon}&z=15&output=embed"></iframe>`
 }
 
-function salvarBanco(lista) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(lista));
+async function buscarEndereco(lat,lon){
+try{
+const url=`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+const r=await fetch(url)
+if(!r.ok) return
+const d=await r.json()
+
+endereco=d.display_name || ""
+
+document.getElementById("endereco").innerText=endereco
+}catch(_){
+// endereço é opcional
+}
 }
 
-function arquivarDia() {
-  const totalMinutos = calcularMinutosTrabalhados();
+function enviarParaPlanilha(payload){
+return new Promise((resolve,reject)=>{
+const img=new Image()
+const params=new URLSearchParams(payload)
+params.set("_ts",Date.now())
 
-  if (totalMinutos === null) {
-    alert("Registro incompleto ou em ordem inválida.");
-    return;
-  }
-
-  const saldo = totalMinutos - JORNADA_MINUTOS;
-
-  const payload = {
-    data: hoje,
-    entrada: dados.entrada,
-    almocoSai: dados.almocoSai,
-    almocoVolta: dados.almocoVolta,
-    saida: dados.saida,
-    totalMinutos,
-    saldo,
-    geo: `${gps} | ${endereco}`,
-  };
-
-  document.getElementById("statusSync").innerText = "🟡 enviando...";
-
-  fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  })
-    .then(async (resposta) => {
-      if (!resposta.ok) {
-        throw new Error("Falha HTTP ao sincronizar.");
-      }
-
-      let retorno = { status: "ok" };
-      try {
-        retorno = await resposta.json();
-      } catch (_) {
-        // alguns endpoints podem responder vazio; considera sucesso HTTP
-      }
-
-      if (retorno.status && retorno.status !== "ok") {
-        throw new Error(retorno.mensagem || "API retornou erro.");
-      }
-
-      document.getElementById("statusSync").innerText = "🟢 sincronizado";
-      salvarLocal(payload, true);
-      resetarDia();
-    })
-    .catch(() => {
-      document.getElementById("statusSync").innerText = "🔴 erro de sincronização";
-      salvarLocal(payload, false);
-      alert("Falha no envio para a planilha. Registro salvo localmente.");
-      resetarDia();
-    });
+img.onload=()=>resolve()
+img.onerror=()=>reject(new Error("Falha ao enviar para planilha"))
+img.src=`${API}?${params.toString()}`
+})
 }
 
-function salvarLocal(payload, sincronizado) {
-  const banco = lerBanco();
+function arquivarDia(){
+const totalMinutos=calcularMinutosTrabalhados()
 
-  banco.push({
-    data: payload.data,
-    entrada: payload.entrada,
-    almocoSai: payload.almocoSai,
-    almocoVolta: payload.almocoVolta,
-    saida: payload.saida,
-    totalMinutos: payload.totalMinutos,
-    saldo: payload.saldo,
-    sincronizado,
-  });
-
-  salvarBanco(banco);
-  carregarHistorico();
-
-  if (typeof gerarGrafico === "function") {
-    gerarGrafico();
-  }
+if(totalMinutos===null){
+alert("Registro incompleto ou inválido")
+return
 }
 
-function carregarHistorico() {
-  const banco = lerBanco();
-  const tabela = document.querySelector("#historico tbody");
+const saldo=totalMinutos-JORNADA_MINUTOS
 
-  tabela.innerHTML = "";
-
-  banco
-    .slice(-5)
-    .reverse()
-    .forEach((registro) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${registro.data}</td>
-        <td>${registro.entrada ?? "--:--"}</td>
-        <td>${registro.saida ?? "--:--"}</td>
-      `;
-      tabela.appendChild(tr);
-    });
+const payload={
+data:hoje,
+entrada:dados.entrada,
+almocoSai:dados.almocoSai,
+almocoVolta:dados.almocoVolta,
+saida:dados.saida,
+totalMinutos:String(totalMinutos),
+saldo:String(saldo),
+geo:gps+" | "+endereco
 }
 
-function baixarCSV() {
-  const banco = lerBanco();
+document.getElementById("statusSync").innerText="🟡 enviando..."
 
-  if (banco.length === 0) {
-    alert("Sem dados para exportar.");
-    return;
-  }
-
-  const cabecalho = [
-    "Data",
-    "Entrada",
-    "Saída Almoço",
-    "Volta Almoço",
-    "Saída Final",
-    "Minutos Trabalhados",
-    "Saldo (min)",
-    "Sincronizado",
-  ];
-
-  const linhas = banco.map((registro) => [
-    registro.data,
-    registro.entrada,
-    registro.almocoSai,
-    registro.almocoVolta,
-    registro.saida,
-    registro.totalMinutos ?? "",
-    registro.saldo ?? "",
-    registro.sincronizado ? "SIM" : "NÃO",
-  ]);
-
-  const csv = [cabecalho, ...linhas]
-    .map((colunas) =>
-      colunas
-        .map((valor) => `"${String(valor ?? "").replaceAll('"', '""')}"`)
-        .join(",")
-    )
-    .join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = `ponto-pro-${hoje.replaceAll("/", "-")}.csv`;
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  URL.revokeObjectURL(url);
+enviarParaPlanilha(payload)
+.then(()=>{
+document.getElementById("statusSync").innerText="🟢 sincronizado"
+salvarLocal(totalMinutos,saldo,true)
+resetarDia()
+})
+.catch(()=>{
+document.getElementById("statusSync").innerText="🔴 erro de sincronização"
+salvarLocal(totalMinutos,saldo,false)
+alert("Falha no envio para planilha. Registro salvo localmente.")
+})
 }
 
-function abrirPlanilha() {
-  window.open(PLANILHA, "_blank");
+function salvarLocal(totalMinutos,saldo,sincronizado){
+const banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+
+banco.push({
+data:hoje,
+entrada:dados.entrada,
+almocoSai:dados.almocoSai,
+almocoVolta:dados.almocoVolta,
+saida:dados.saida,
+totalMinutos,
+saldo,
+sincronizado:!!sincronizado
+})
+
+localStorage.setItem("ponto_db",JSON.stringify(banco))
+
+carregarHistorico()
+if(typeof gerarGrafico==="function") gerarGrafico()
 }
 
-function resetarDia() {
-  dados = {
-    entrada: null,
-    almocoSai: null,
-    almocoVolta: null,
-    saida: null,
-  };
+function carregarHistorico(){
+const banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
+const tabela=document.querySelector("#historico tbody")
 
-  document.getElementById("entrada").innerText = "--:--";
-  document.getElementById("saidaAlmoco").innerText = "--:--";
-  document.getElementById("voltaAlmoco").innerText = "--:--";
-  document.getElementById("saidaFinal").innerText = "--:--";
+tabela.innerHTML=""
+
+banco.slice(-5).reverse().forEach(d=>{
+const tr=document.createElement("tr")
+tr.innerHTML=`<td>${d.data}</td><td>${d.entrada ?? "--:--"}</td><td>${d.saida ?? "--:--"}</td>`
+tabela.appendChild(tr)
+})
 }
 
-function abrirAjuste() {
-  const painel = document.getElementById("painelAjuste");
+function baixarCSV(){
+const banco=JSON.parse(localStorage.getItem("ponto_db")||"[]")
 
-  if (painel.style.display === "none" || painel.style.display === "") {
-    painel.style.display = "block";
-
-    document.getElementById("ajEntrada").value = dados.entrada || "";
-    document.getElementById("ajAlmocoSai").value = dados.almocoSai || "";
-    document.getElementById("ajAlmocoVolta").value = dados.almocoVolta || "";
-    document.getElementById("ajSaida").value = dados.saida || "";
-  } else {
-    painel.style.display = "none";
-  }
+if(banco.length===0){
+alert("Sem dados para exportar.")
+return
 }
 
-function salvarAjuste() {
-  const ajuste = {
-    entrada: document.getElementById("ajEntrada").value || null,
-    almocoSai: document.getElementById("ajAlmocoSai").value || null,
-    almocoVolta: document.getElementById("ajAlmocoVolta").value || null,
-    saida: document.getElementById("ajSaida").value || null,
-  };
+const cabecalho=["Data","Entrada","Saída Almoço","Volta Almoço","Saída Final","Minutos Trabalhados","Saldo (min)","Sincronizado"]
+const linhas=banco.map(d=>[
+d.data,
+d.entrada,
+d.almocoSai,
+d.almocoVolta,
+d.saida,
+d.totalMinutos ?? "",
+d.saldo ?? "",
+d.sincronizado?"SIM":"NÃO"
+])
 
-  const camposPreenchidos = Object.values(ajuste).filter(Boolean).length;
-  if (camposPreenchidos > 0 && camposPreenchidos < 4) {
-    alert("Para ajuste manual, preencha os 4 horários.");
-    return;
-  }
+const csv=[cabecalho,...linhas]
+.map(colunas=>colunas.map(valor=>`"${String(valor ?? "").replaceAll('"','""')}"`).join(","))
+.join("\n")
 
-  if (camposPreenchidos === 4 && calcularMinutosTrabalhados(ajuste) === null) {
-    alert("A sequência dos horários está inválida.");
-    return;
-  }
-
-  dados = ajuste;
-
-  document.getElementById("entrada").innerText = dados.entrada || "--:--";
-  document.getElementById("saidaAlmoco").innerText = dados.almocoSai || "--:--";
-  document.getElementById("voltaAlmoco").innerText = dados.almocoVolta || "--:--";
-  document.getElementById("saidaFinal").innerText = dados.saida || "--:--";
-
-  alert("Horário ajustado.");
+const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"})
+const url=URL.createObjectURL(blob)
+const a=document.createElement("a")
+a.href=url
+a.download=`ponto-pro-${hoje.replaceAll("/", "-")}.csv`
+document.body.appendChild(a)
+a.click()
+document.body.removeChild(a)
+URL.revokeObjectURL(url)
 }
 
-function atualizarCronometro() {
-  const el = document.getElementById("cronometro");
-  if (!el) return;
-
-  const totalMinutos = calcularMinutosTrabalhados();
-  if (totalMinutos === null) {
-    el.innerText = "00:00:00";
-    return;
-  }
-
-  const horas = String(Math.floor(totalMinutos / 60)).padStart(2, "0");
-  const minutos = String(totalMinutos % 60).padStart(2, "0");
-  el.innerText = `${horas}:${minutos}:00`;
+function abrirPlanilha(){
+window.open(PLANILHA,"_blank")
 }
 
-window.addEventListener("load", () => {
-  obterGPS();
-  carregarHistorico();
+function resetarDia(){
+dados={entrada:null,almocoSai:null,almocoVolta:null,saida:null}
 
-  if (typeof gerarGrafico === "function") {
-    gerarGrafico();
-  }
+document.getElementById("entrada").innerText="--:--"
+document.getElementById("saidaAlmoco").innerText="--:--"
+document.getElementById("voltaAlmoco").innerText="--:--"
+document.getElementById("saidaFinal").innerText="--:--"
+}
 
-  atualizarCronometro();
-  setInterval(atualizarCronometro, 1000);
-});
+function abrirAjuste(){
+const painel=document.getElementById("painelAjuste")
+
+if(painel.style.display==="none" || painel.style.display===""){
+painel.style.display="block"
+
+document.getElementById("ajEntrada").value=dados.entrada||""
+document.getElementById("ajAlmocoSai").value=dados.almocoSai||""
+document.getElementById("ajAlmocoVolta").value=dados.almocoVolta||""
+document.getElementById("ajSaida").value=dados.saida||""
+}else{
+painel.style.display="none"
+}
+}
+
+function salvarAjuste(){
+dados.entrada=document.getElementById("ajEntrada").value || null
+dados.almocoSai=document.getElementById("ajAlmocoSai").value || null
+dados.almocoVolta=document.getElementById("ajAlmocoVolta").value || null
+dados.saida=document.getElementById("ajSaida").value || null
+
+document.getElementById("entrada").innerText=dados.entrada || "--:--"
+document.getElementById("saidaAlmoco").innerText=dados.almocoSai || "--:--"
+document.getElementById("voltaAlmoco").innerText=dados.almocoVolta || "--:--"
+document.getElementById("saidaFinal").innerText=dados.saida || "--:--"
+
+alert("Horário ajustado")
+}
+
+window.addEventListener("load",()=>{
+obterGPS()
+carregarHistorico()
+if(typeof gerarGrafico==="function") gerarGrafico()
+})
 
 
 
