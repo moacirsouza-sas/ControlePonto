@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbyRAyYdpFB_VLhbCCPPccto5-5-ywbQRFRSVR1eaNB1II0vPCMyNK22iBqpwfJtdPo/exec";
+const API = "https://script.google.com/macros/s/AKfycbwOC9FMcoRFB0WkE8C8NjQq08g3NHEa7Prwf3bjAKzb8aNO8nM0EQjPgn_H28TxWw/exec";
 const PLANILHA = "https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit";
 
 const JORNADA_MINUTOS = 540;
@@ -378,6 +378,7 @@ window.addEventListener("load", () => {
   atualizarCronometro();
   setInterval(atualizarCronometro, 1000);
 });
+
 
 
 
