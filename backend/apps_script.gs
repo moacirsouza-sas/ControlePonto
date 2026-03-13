@@ -1,41 +1,53 @@
-function doPost(e){
+function doPost(e) {
 
-const SPREADSHEET_ID="1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE"
+  const SPREADSHEET_ID = "1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE";
+  const JORNADA_MINUTOS = 540;
 
-const aba=SpreadsheetApp
-.openById(SPREADSHEET_ID)
-.getSheets()[0]
+  try {
+    const aba = SpreadsheetApp
+      .openById(SPREADSHEET_ID)
+      .getSheets()[0];
 
-const dados=JSON.parse(e.postData.contents)
+    const dados = JSON.parse(e.postData.contents);
 
-const entrada=new Date("1970-01-01T"+dados.entrada+":00")
-const almocoSai=new Date("1970-01-01T"+dados.almocoSai+":00")
-const almocoVolta=new Date("1970-01-01T"+dados.almocoVolta+":00")
-const saida=new Date("1970-01-01T"+dados.saida+":00")
+    if (!dados.entrada || !dados.almocoSai || !dados.almocoVolta || !dados.saida) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: "erro", mensagem: "Dados incompletos." }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
 
-const manha=(almocoSai-entrada)
-const tarde=(saida-almocoVolta)
+    const entrada = new Date("1970-01-01T" + dados.entrada + ":00");
+    const almocoSai = new Date("1970-01-01T" + dados.almocoSai + ":00");
+    const almocoVolta = new Date("1970-01-01T" + dados.almocoVolta + ":00");
+    const saida = new Date("1970-01-01T" + dados.saida + ":00");
 
-const total=(manha+tarde)/60000
+    const manha = (almocoSai - entrada);
+    const tarde = (saida - almocoVolta);
 
-const jornada=480
+    const totalCalculado = (manha + tarde) / 60000;
+    const total = Number(dados.totalMinutos ?? totalCalculado);
+    const saldo = Number(dados.saldo ?? (total - JORNADA_MINUTOS));
 
-const saldo=total-jornada
+    aba.appendRow([
+      dados.data,
+      dados.entrada,
+      dados.almocoSai,
+      dados.almocoVolta,
+      dados.saida,
+      total,
+      saldo,
+      dados.geo || "",
+      new Date(),
+    ]);
 
-aba.appendRow([
-dados.data,
-dados.entrada,
-dados.almocoSai,
-dados.almocoVolta,
-dados.saida,
-total,
-saldo,
-dados.geo,
-new Date()
-])
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "ok" }))
+      .setMimeType(ContentService.MimeType.JSON);
 
-return ContentService
-.createTextOutput(JSON.stringify({status:"ok"}))
-.setMimeType(ContentService.MimeType.JSON)
-
+  } catch (erro) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "erro", mensagem: erro.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
+
