@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbyS2cKnRdAfxTVb9PMIC6_Pt8n5jYWNbktt5RH5XOtVl35ICQiB03sDXwpA_2PQxqs/exec"
+const API="https://script.google.com/macros/s/AKfycbzxoBpSIrk_WtJnCdeUmv_9dZu1d0iMoQqYWWfE5q6r8yP8ZmMxpy_IQfReml0W9g/exec"
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
 
@@ -313,6 +313,7 @@ window.addEventListener("load", () => {
   carregarHistorico();
   if (typeof gerarGrafico === "function") gerarGrafico();
 });
+
 
 
 
