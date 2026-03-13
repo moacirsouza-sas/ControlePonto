@@ -23,7 +23,6 @@ const jornada=480
 const saldo=total-jornada
 
 aba.appendRow([
-
 dados.data,
 dados.entrada,
 dados.almocoSai,
@@ -33,10 +32,10 @@ total,
 saldo,
 dados.geo,
 new Date()
-
 ])
 
 return ContentService
-.createTextOutput("OK")
+.createTextOutput(JSON.stringify({status:"ok"}))
+.setMimeType(ContentService.MimeType.JSON)
 
 }
