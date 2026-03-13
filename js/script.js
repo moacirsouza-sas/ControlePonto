@@ -1,4 +1,4 @@
-const API="https://script.google.com/macros/s/AKfycbyRAyYdpFB_VLhbCCPPccto5-5-ywbQRFRSVR1eaNB1II0vPCMyNK22iBqpwfJtdPo/exec"
+const API="https://script.google.com/macros/s/AKfycbyS2cKnRdAfxTVb9PMIC6_Pt8n5jYWNbktt5RH5XOtVl35ICQiB03sDXwpA_2PQxqs/exec"
 
 const PLANILHA="https://docs.google.com/spreadsheets/d/1ItfOyHZhqiZVQcaYIq4S3Dz4PLdeu_LRwNSXFLyw5sE/edit"
 const JORNADA_MINUTOS=540
@@ -273,6 +273,7 @@ obterGPS()
 carregarHistorico()
 if(typeof gerarGrafico==="function") gerarGrafico()
 })
+
 
 
 
