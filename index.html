@@ -62,9 +62,28 @@
 
 <div id="mapa"></div>
 
+<div id="statusSync" class="sync">
+🟡 aguardando sincronização
+</div>
+
 <button class="btn-arquivar" onclick="arquivarDia()">
 Arquivar Registro do Dia
 </button>
+
+<button class="btn-ajuste" onclick="abrirAjuste()">
+✏ Ajustar Horário
+</button>
+
+<div id="painelAjuste" style="display:none">
+
+<input type="time" id="ajEntrada">
+<input type="time" id="ajAlmocoSai">
+<input type="time" id="ajAlmocoVolta">
+<input type="time" id="ajSaida">
+
+<button onclick="salvarAjuste()">Salvar Ajuste</button>
+
+</div>
 
 <div class="acoes">
 
@@ -109,4 +128,3 @@ Arquivar Registro do Dia
 
 </body>
 </html>
-
