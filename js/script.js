@@ -106,49 +106,30 @@ async function buscarEndereco(lat, lon) {
 
 function enviarParaPlanilha(payload) {
   return new Promise((resolve, reject) => {
-    const frameName = `syncFrame_${Date.now()}`;
-    const iframe = document.createElement("iframe");
-    iframe.name = frameName;
-    iframe.style.display = "none";
-
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = API;
-    form.target = frameName;
-    form.style.display = "none";
+    const img = new Image();
+    const params = new URLSearchParams();
 
     Object.entries(payload).forEach(([chave, valor]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = chave;
-      input.value = String(valor ?? "");
-      form.appendChild(input);
+      params.set(chave, String(valor ?? ""));
     });
 
-    let finalizado = false;
+    params.set("_ts", String(Date.now()));
+
     const timeoutId = setTimeout(() => {
-      if (finalizado) return;
-      finalizado = true;
-      limpar();
       reject(new Error("Tempo excedido na sincronização."));
     }, 12000);
 
-    function limpar() {
+    img.onload = () => {
       clearTimeout(timeoutId);
-      if (form.parentNode) form.parentNode.removeChild(form);
-      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-    }
-
-    iframe.onload = () => {
-      if (finalizado) return;
-      finalizado = true;
-      limpar();
       resolve();
     };
 
-    document.body.appendChild(iframe);
-    document.body.appendChild(form);
-    form.submit();
+    img.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(new Error("Erro ao enviar para planilha."));
+    };
+
+    img.src = `${API}?${params.toString()}`;
   });
 }
 
